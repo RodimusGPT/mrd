@@ -1,0 +1,682 @@
+/* ========================================
+   Design Tokens & Variables
+   ======================================== */
+:root {
+    /* Colors */
+    --rose-gold: #D4AF7A;
+    --ivory: #FFFEF7;
+    --charcoal: #2C2C2C;
+    --blush: #F8E8E8;
+    --accent: #C9A063;
+    --error: #D88C8C;
+    --success: #8CC9A0;
+
+    /* Typography */
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Montserrat', sans-serif;
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-xxl: 4rem;
+
+    /* Transitions */
+    --transition: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(44, 44, 44, 0.1);
+    --shadow-md: 0 4px 16px rgba(44, 44, 44, 0.15);
+    --shadow-lg: 0 8px 32px rgba(44, 44, 44, 0.2);
+
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+}
+
+/* ========================================
+   Base Styles
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--charcoal);
+    background-color: var(--ivory);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ========================================
+   Loading Overlay
+   ======================================== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 254, 247, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity var(--transition);
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--blush);
+    border-top-color: var(--rose-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: var(--spacing-md);
+    font-size: 1.1rem;
+    color: var(--charcoal);
+    font-weight: 500;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Screen System
+   ======================================== */
+.screen {
+    min-height: 100vh;
+    padding: var(--spacing-xl) var(--spacing-md);
+    display: none;
+    opacity: 0;
+    animation: fadeIn var(--transition-slow) forwards;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.screen-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+    color: var(--charcoal);
+}
+
+.screen-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: var(--spacing-xl);
+    font-weight: 300;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+.btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    transition: all var(--transition);
+    display: inline-block;
+    text-align: center;
+    min-width: 200px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--rose-gold), var(--accent));
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--blush);
+    color: var(--charcoal);
+}
+
+.btn-secondary:hover {
+    background: #edd8d8;
+    transform: translateY(-1px);
+}
+
+.btn-back {
+    background: transparent;
+    color: var(--rose-gold);
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+    transition: var(--transition);
+}
+
+.btn-back:hover {
+    color: var(--accent);
+}
+
+/* ========================================
+   Landing Screen
+   ======================================== */
+#landingScreen {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--ivory) 0%, var(--blush) 100%);
+    overflow: hidden;
+}
+
+.landing-content {
+    text-align: center;
+    z-index: 2;
+    position: relative;
+}
+
+.landing-title {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--rose-gold);
+    margin-bottom: var(--spacing-md);
+    text-shadow: 2px 2px 4px rgba(212, 175, 122, 0.1);
+}
+
+.landing-subtitle {
+    font-size: 1.8rem;
+    font-family: var(--font-heading);
+    color: var(--charcoal);
+    margin-bottom: var(--spacing-lg);
+    font-weight: 400;
+}
+
+.landing-description {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto var(--spacing-xl);
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+.landing-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.landing-particles::before,
+.landing-particles::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 175, 122, 0.1), transparent);
+    animation: float 20s infinite ease-in-out;
+}
+
+.landing-particles::before {
+    top: -100px;
+    left: -100px;
+}
+
+.landing-particles::after {
+    bottom: -100px;
+    right: -100px;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(50px, 50px) scale(1.1); }
+}
+
+/* Animation delays */
+.fade-in {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.fade-in-delay {
+    animation: fadeInUp 0.8s ease 0.2s forwards;
+    opacity: 0;
+}
+
+.fade-in-delay-2 {
+    animation: fadeInUp 0.8s ease 0.4s forwards;
+    opacity: 0;
+}
+
+.fade-in-delay-3 {
+    animation: fadeInUp 0.8s ease 0.6s forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   Choice Screen
+   ======================================== */
+.choice-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.choice-card {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: all var(--transition);
+    cursor: pointer;
+}
+
+.choice-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.choice-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.choice-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--charcoal);
+}
+
+.choice-card p {
+    color: #666;
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.95rem;
+}
+
+/* ========================================
+   Gallery Screen
+   ======================================== */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.ring-card {
+    background: white;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition);
+    cursor: pointer;
+}
+
+.ring-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.ring-card-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    background: var(--blush);
+}
+
+.ring-card-content {
+    padding: var(--spacing-md);
+}
+
+.ring-card-title {
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--charcoal);
+}
+
+.ring-card-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.ring-card .btn {
+    width: 100%;
+    min-width: auto;
+}
+
+/* ========================================
+   Designer Screen
+   ======================================== */
+.designer-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+}
+
+.designer-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+    color: var(--charcoal);
+}
+
+.designer-form textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 2px solid var(--blush);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color var(--transition);
+}
+
+.designer-form textarea:focus {
+    outline: none;
+    border-color: var(--rose-gold);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.example-prompts {
+    margin-bottom: var(--spacing-lg);
+}
+
+.example-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: var(--spacing-sm);
+}
+
+.prompt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.chip {
+    padding: 0.5rem 1rem;
+    background: var(--blush);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--charcoal);
+    transition: all var(--transition);
+}
+
+.chip:hover {
+    background: var(--rose-gold);
+    color: white;
+}
+
+.designer-preview {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.preview-placeholder {
+    text-align: center;
+    color: #999;
+}
+
+.designer-preview img {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+}
+
+/* ========================================
+   Preview Screen
+   ======================================== */
+.preview-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.preview-image-container {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.preview-image-container img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+.preview-details {
+    text-align: center;
+}
+
+.preview-details h3 {
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--charcoal);
+}
+
+.preview-details p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.8;
+}
+
+.preview-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   Thank You Screen
+   ======================================== */
+.thankyou-content {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.thankyou-icon {
+    font-size: 5rem;
+    margin-bottom: var(--spacing-lg);
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    10%, 30% { transform: scale(1.1); }
+    20%, 40% { transform: scale(1); }
+}
+
+.thankyou-title {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--rose-gold);
+}
+
+.thankyou-message {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: var(--spacing-xl);
+}
+
+.thankyou-ring-preview {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.thankyou-ring-preview img {
+    max-height: 400px;
+    margin: 0 auto;
+}
+
+.thankyou-note {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: #666;
+}
+
+.signature {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--rose-gold);
+    font-weight: 600;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+@media (max-width: 768px) {
+    .screen {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+
+    .screen-title {
+        font-size: 2rem;
+    }
+
+    .landing-title {
+        font-size: 3rem;
+    }
+
+    .landing-subtitle {
+        font-size: 1.4rem;
+    }
+
+    .landing-description {
+        font-size: 1rem;
+    }
+
+    .choice-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .designer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-title {
+        font-size: 2.5rem;
+    }
+
+    .screen-title {
+        font-size: 1.8rem;
+    }
+
+    .thankyou-title {
+        font-size: 2rem;
+    }
+}
