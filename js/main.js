@@ -242,13 +242,18 @@ const app = {
     /**
      * Confirm the selected design
      */
-    confirmDesign() {
+    async confirmDesign() {
         if (!this.currentDesign) return;
 
         console.log('Design confirmed:', this.currentDesign);
 
-        // Save to localStorage
-        this.saveDesign();
+        // Show loading while saving
+        this.showLoading(true);
+
+        // Save to both localStorage and cloud
+        await this.saveDesign();
+
+        this.showLoading(false);
 
         // Show thank you screen
         const finalImage = document.getElementById('finalRingImage');
@@ -264,15 +269,16 @@ const app = {
     },
 
     /**
-     * Save design to localStorage
+     * Save design to localStorage AND Supabase (cloud)
      */
-    saveDesign() {
-        try {
-            const designData = {
-                ...this.currentDesign,
-                timestamp: new Date().toISOString()
-            };
+    async saveDesign() {
+        const designData = {
+            ...this.currentDesign,
+            timestamp: new Date().toISOString()
+        };
 
+        // 1. Always save to localStorage (backup)
+        try {
             localStorage.setItem(
                 CONFIG.STORAGE_KEYS.SELECTED_DESIGN,
                 JSON.stringify(designData)
@@ -285,10 +291,21 @@ const app = {
                 CONFIG.STORAGE_KEYS.DESIGN_TYPE,
                 this.currentDesign.type
             );
-
-            console.log('Design saved to localStorage');
+            console.log('✅ Design saved to localStorage');
         } catch (error) {
-            console.error('Failed to save design:', error);
+            console.error('localStorage save failed:', error);
+        }
+
+        // 2. Also save to Firebase (cloud persistence)
+        try {
+            const cloudResult = await FirebaseClient.saveDesign(this.currentDesign);
+            if (cloudResult.success) {
+                console.log('✅ Design saved to Firebase cloud!', cloudResult.id);
+            } else {
+                console.warn('⚠️ Cloud save skipped:', cloudResult.error);
+            }
+        } catch (error) {
+            console.warn('⚠️ Cloud save failed (localStorage backup exists):', error);
         }
     },
 
@@ -324,4 +341,51 @@ const app = {
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
+});
+
+// ============================================
+// SECRET ADMIN FUNCTIONS
+// Press keys to access after proposal
+// ============================================
+
+document.addEventListener('keydown', async (e) => {
+    // Press 'A' - View localStorage design
+    if (e.key === 'A' || e.key === 'a') {
+        const saved = localStorage.getItem('maria_ring_design');
+        if (saved) {
+            console.log('📦 LocalStorage Design:', JSON.parse(saved));
+            alert('Design found! Check browser console (F12) for details.');
+        } else {
+            alert('No design saved in localStorage yet.');
+        }
+    }
+
+    // Press 'S' - Fetch from Firebase cloud
+    if (e.key === 'S' || e.key === 's') {
+        console.log('☁️ Fetching from Firebase...');
+        const result = await FirebaseClient.getLatestDesign();
+        if (result.success) {
+            console.log('☁️ Cloud Design:', result.data);
+            alert(`Found design from cloud!\n\nType: ${result.data.design_type}\nTitle: ${result.data.title}\nSaved: ${result.data.created_at}\n\nCheck console for full details.`);
+        } else {
+            alert('No designs found in Firebase (or not configured).');
+        }
+    }
+
+    // Press 'D' - Download design as JSON file
+    if (e.key === 'D' || e.key === 'd') {
+        const saved = localStorage.getItem('maria_ring_design');
+        if (saved) {
+            const blob = new Blob([saved], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'marias-ring-design.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            console.log('💾 Design downloaded!');
+        } else {
+            alert('No design to download yet.');
+        }
+    }
 });

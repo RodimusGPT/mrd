@@ -1,10 +1,19 @@
 // Configuration for the Ring Designer App
 const CONFIG = {
-    // fal.ai API Configuration
+    // =============================================
+    // FIREBASE Configuration (Cloud Database)
+    // Get this from: console.firebase.google.com → Project Settings
+    // =============================================
+    FIREBASE: {
+        projectId: 'YOUR_PROJECT_ID',  // e.g., 'ring-designer-12345'
+    },
+
+    // =============================================
+    // FAL.AI Configuration (AI Image Generation)
+    // Get your key from: https://fal.ai/dashboard/keys
+    // =============================================
     FAL_API: {
         endpoint: 'https://fal.run/fal-ai/nano-banana-pro',
-        // IMPORTANT: Replace with your actual fal.ai API key
-        // Get your key from: https://fal.ai/dashboard/keys
         apiKey: 'YOUR_FAL_API_KEY_HERE',
 
         // Prompt engineering settings
