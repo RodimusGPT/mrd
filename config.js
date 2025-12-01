@@ -11,7 +11,7 @@ const CONFIG = {
     // Get this from: console.firebase.google.com → Project Settings
     // =============================================
     FIREBASE: {
-        projectId: 'YOUR_PROJECT_ID',  // e.g., 'ring-designer-12345'
+        projectId: 'ring-b6de2',
     },
 
     // Example prompts for inspiration
