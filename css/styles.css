@@ -559,72 +559,78 @@ img {
 }
 
 /* ========================================
-   Ring Guide
+   Inline Ring Guide (Integrated with Prompt)
    ======================================== */
-.ring-guide-toggle {
-    text-align: center;
-    margin-bottom: var(--spacing-md);
-}
-
-.btn-guide {
-    background: var(--white);
-    border: 2px solid var(--turquoise);
-    color: var(--turquoise);
-    padding: 0.5rem 1.5rem;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all var(--transition);
-}
-
-.btn-guide:hover {
-    background: var(--turquoise);
-    color: white;
-}
-
-.ring-guide {
-    background: var(--white);
+.inline-ring-guide {
+    background: linear-gradient(135deg, var(--soft-pink), rgba(64, 224, 208, 0.08));
     border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
-    border: 2px solid var(--pink-paradise);
+    border: 1px solid var(--pink-paradise);
 }
 
-.guide-section {
-    margin-bottom: var(--spacing-md);
-}
-
-.guide-section:last-child {
-    margin-bottom: 0;
-}
-
-.guide-section h4 {
+.guide-intro {
+    font-size: 0.85rem;
     color: var(--hot-pink);
+    font-weight: 600;
     margin-bottom: var(--spacing-sm);
-    font-size: 0.9rem;
+    text-align: center;
+}
+
+.guide-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dashed rgba(233, 30, 140, 0.15);
+}
+
+.guide-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.guide-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--turquoise);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 60px;
+    flex-shrink: 0;
 }
 
 .guide-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.35rem;
+    flex: 1;
 }
 
 .guide-chip {
-    padding: 0.3rem 0.8rem;
-    background: var(--soft-pink);
+    padding: 0.25rem 0.65rem;
+    background: var(--white);
     border: 1px solid var(--pink-paradise);
-    border-radius: 15px;
-    font-size: 0.75rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
     color: var(--charcoal);
     cursor: pointer;
     transition: all var(--transition);
+    white-space: nowrap;
 }
 
 .guide-chip:hover {
     background: var(--pink-paradise);
     color: white;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(233, 30, 140, 0.2);
+}
+
+.guide-chip:active {
+    transform: scale(0.98);
 }
 
 /* ========================================
@@ -930,5 +936,30 @@ img {
 
     .thankyou-title {
         font-size: 2rem;
+    }
+
+    /* Inline Ring Guide - Mobile */
+    .inline-ring-guide {
+        padding: var(--spacing-sm);
+    }
+
+    .guide-intro {
+        font-size: 0.8rem;
+    }
+
+    .guide-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .guide-label {
+        min-width: auto;
+        margin-bottom: 0.2rem;
+    }
+
+    .guide-chip {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
     }
 }

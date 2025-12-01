@@ -79,27 +79,6 @@
             <h2 class="screen-title">Design Your Dream Ring</h2>
             <p class="screen-subtitle">Describe your perfect engagement ring and refine it through conversation</p>
 
-            <!-- Ring Guide Helper -->
-            <div class="ring-guide-toggle">
-                <button class="btn-guide" onclick="app.toggleGuide()">
-                    💎 Ring Terminology Guide
-                </button>
-            </div>
-            <div class="ring-guide" id="ringGuide" style="display: none;">
-                <div class="guide-section">
-                    <h4>Diamond Shapes</h4>
-                    <div class="guide-chips" id="guideShapes"></div>
-                </div>
-                <div class="guide-section">
-                    <h4>Settings</h4>
-                    <div class="guide-chips" id="guideSettings"></div>
-                </div>
-                <div class="guide-section">
-                    <h4>Metals</h4>
-                    <div class="guide-chips" id="guideMetals"></div>
-                </div>
-            </div>
-
             <!-- Conversation Container -->
             <div class="design-conversation" id="designConversation">
                 <!-- Initial prompt area (shown when no designs yet) -->
@@ -108,7 +87,7 @@
                         <label for="ringDescription">Describe your dream engagement ring:</label>
                         <textarea
                             id="ringDescription"
-                            placeholder="Example: A round brilliant diamond solitaire on a thin platinum band with a hidden halo underneath..."
+                            placeholder="Tap the terms below to build your description, or type freely..."
                             maxlength="500"
                             rows="4"
                         ></textarea>
@@ -116,8 +95,33 @@
                             <span id="charCount">0</span> / 500 characters
                         </div>
 
+                        <!-- Inline Ring Terminology Guide -->
+                        <div class="inline-ring-guide" id="ringGuide">
+                            <p class="guide-intro">💎 Tap to add ring terms:</p>
+
+                            <div class="guide-row">
+                                <span class="guide-label">Diamond:</span>
+                                <div class="guide-chips" id="guideShapes"></div>
+                            </div>
+
+                            <div class="guide-row">
+                                <span class="guide-label">Setting:</span>
+                                <div class="guide-chips" id="guideSettings"></div>
+                            </div>
+
+                            <div class="guide-row">
+                                <span class="guide-label">Metal:</span>
+                                <div class="guide-chips" id="guideMetals"></div>
+                            </div>
+
+                            <div class="guide-row">
+                                <span class="guide-label">Accents:</span>
+                                <div class="guide-chips" id="guideAccents"></div>
+                            </div>
+                        </div>
+
                         <div class="example-prompts">
-                            <p class="example-label">Quick start ideas:</p>
+                            <p class="example-label">Or try a complete example:</p>
                             <div class="prompt-chips">
                                 <button class="chip" onclick="app.fillExample(0)">Round Solitaire</button>
                                 <button class="chip" onclick="app.fillExample(1)">Oval Halo</button>

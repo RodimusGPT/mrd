@@ -59,6 +59,7 @@ const CONFIG = {
     },
 
     // Classic Engagement Ring Gallery - Popular Diamond Styles
+    // Using verified engagement ring images from Unsplash
     CURATED_RINGS: [
         {
             id: 1,
@@ -67,8 +68,7 @@ const CONFIG = {
             style: 'Solitaire',
             diamond: 'Round Brilliant',
             metal: 'Platinum',
-            imageUrl: 'images/rings/round-solitaire.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1586104237516-5765e76a6fc0?w=500&q=80'
         },
         {
             id: 2,
@@ -77,8 +77,7 @@ const CONFIG = {
             style: 'Halo',
             diamond: 'Oval',
             metal: 'White Gold',
-            imageUrl: 'images/rings/oval-halo.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1589674781759-c21c37956a44?w=500&q=80'
         },
         {
             id: 3,
@@ -87,8 +86,7 @@ const CONFIG = {
             style: 'Cathedral Pavé',
             diamond: 'Cushion',
             metal: 'Rose Gold',
-            imageUrl: 'images/rings/cushion-romance.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=500&q=80'
         },
         {
             id: 4,
@@ -97,8 +95,7 @@ const CONFIG = {
             style: 'Three-Stone',
             diamond: 'Round Brilliant',
             metal: 'Platinum',
-            imageUrl: 'images/rings/three-stone.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1598560917505-59a3ad559071?w=500&q=80'
         },
         {
             id: 5,
@@ -107,8 +104,7 @@ const CONFIG = {
             style: 'Channel-Set',
             diamond: 'Princess',
             metal: 'White Gold',
-            imageUrl: 'images/rings/princess-modern.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1612323371341-a05dd8a23f99?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1600721391776-b5cd0e0048f9?w=500&q=80'
         },
         {
             id: 6,
@@ -117,8 +113,7 @@ const CONFIG = {
             style: 'Hidden Halo',
             diamond: 'Pear',
             metal: 'Rose Gold',
-            imageUrl: 'images/rings/pear-elegance.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=500&q=80'
         },
         {
             id: 7,
@@ -127,8 +122,7 @@ const CONFIG = {
             style: 'Art Deco',
             diamond: 'Emerald',
             metal: 'Platinum',
-            imageUrl: 'images/rings/emerald-deco.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1591209627710-d2427a94c82e?w=500&q=80'
         },
         {
             id: 8,
@@ -137,8 +131,7 @@ const CONFIG = {
             style: 'Vintage Milgrain',
             diamond: 'Marquise',
             metal: 'Yellow Gold',
-            imageUrl: 'images/rings/marquise-vintage.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&q=80'
         },
         {
             id: 9,
@@ -147,8 +140,7 @@ const CONFIG = {
             style: 'Double Halo',
             diamond: 'Radiant',
             metal: 'White Gold',
-            imageUrl: 'images/rings/radiant-halo.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1603561596112-0a132b757442?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?w=500&q=80'
         },
         {
             id: 10,
@@ -157,8 +149,7 @@ const CONFIG = {
             style: 'Bezel',
             diamond: 'Asscher',
             metal: 'Platinum',
-            imageUrl: 'images/rings/asscher-gatsby.jpg',
-            fallbackUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400'
+            fallbackUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&q=80'
         }
     ],
 

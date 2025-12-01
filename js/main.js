@@ -64,16 +64,22 @@ const app = {
                 `<button class="guide-chip" onclick="app.insertTerm('${item.name}')" title="${item.desc}">${item.name}</button>`
             ).join('');
         }
+
+        // Populate accents
+        const accentsContainer = document.getElementById('guideAccents');
+        if (accentsContainer && guide.accents) {
+            accentsContainer.innerHTML = guide.accents.map(item =>
+                `<button class="guide-chip" onclick="app.insertTerm('${item.name}')" title="${item.desc}">${item.name}</button>`
+            ).join('');
+        }
     },
 
     /**
-     * Toggle ring guide visibility
+     * Toggle ring guide visibility (deprecated - guide is now always inline)
      */
     toggleGuide() {
-        const guide = document.getElementById('ringGuide');
-        if (guide) {
-            guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
-        }
+        // Guide is now always visible inline with the prompt
+        // This function kept for backward compatibility
     },
 
     /**
@@ -161,12 +167,14 @@ const app = {
     createRingCard(ring) {
         const card = document.createElement('div');
         card.className = 'ring-card';
+        // Use fallbackUrl directly since we're using Unsplash URLs
+        const imageUrl = ring.imageUrl || ring.fallbackUrl;
         card.innerHTML = `
             <img
-                src="${ring.imageUrl}"
+                src="${imageUrl}"
                 alt="${ring.title}"
                 class="ring-card-image"
-                onerror="this.src='${ring.fallbackUrl}'"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&q=80'"
             >
             <div class="ring-card-content">
                 <h3 class="ring-card-title">${ring.title}</h3>
