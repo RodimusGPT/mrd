@@ -133,6 +133,8 @@ img {
 
 .screen.active {
     display: block;
+    opacity: 1;
+    animation: fadeIn var(--transition-slow) forwards;
 }
 
 @keyframes fadeIn {
