@@ -265,6 +265,7 @@ img {
     height: 100%;
     overflow: hidden;
     z-index: 1;
+    pointer-events: none;  /* Allow clicks to pass through to button */
 }
 
 .landing-particles::before,
