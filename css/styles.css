@@ -127,17 +127,17 @@ img {
     min-height: 100vh;
     padding: var(--spacing-xl) var(--spacing-md);
     display: none;
-    opacity: 0;
-    animation: fadeIn var(--transition-slow) forwards;
 }
 
 .screen.active {
     display: block;
-    opacity: 1;
     animation: fadeIn var(--transition-slow) forwards;
 }
 
 @keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
     to {
         opacity: 1;
     }
@@ -221,11 +221,19 @@ img {
    ======================================== */
 #landingScreen {
     position: relative;
+    background: linear-gradient(135deg, var(--ivory) 0%, var(--blush) 100%);
+    overflow: hidden;
+}
+
+/* Use higher specificity to properly hide landing screen when not active */
+#landingScreen:not(.active) {
+    display: none;
+}
+
+#landingScreen.active {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--ivory) 0%, var(--blush) 100%);
-    overflow: hidden;
 }
 
 .landing-content {
