@@ -3,16 +3,19 @@
    Lilly Pulitzer Inspired Palette
    ======================================== */
 :root {
-    /* Colors - Lilly Pulitzer Aesthetic */
+    /* Colors - Bold Lilly Pulitzer Aesthetic */
     --pink-paradise: #FF6B9D;
     --hot-pink: #E91E8C;
-    --turquoise: #40E0D0;
-    --coral: #FF7F7F;
-    --lime-splash: #98FB98;
+    --turquoise: #00CED1;
+    --coral: #FF6F61;
+    --lime-splash: #7FFF00;
     --sunny-gold: #FFD700;
-    --palm-green: #2E8B57;
+    --palm-green: #00A86B;
+    --ocean-blue: #4ECDC4;
+    --papaya: #FFEFD5;
+    --flamingo: #FC8EAC;
     --white: #FFFFFF;
-    --soft-pink: #FFF0F5;
+    --soft-pink: #FFF5F8;
     --charcoal: #2C2C2C;
 
     /* Semantic Colors */
@@ -40,15 +43,17 @@
     --transition: 0.3s ease;
     --transition-slow: 0.5s ease;
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(44, 44, 44, 0.1);
-    --shadow-md: 0 4px 16px rgba(44, 44, 44, 0.15);
-    --shadow-lg: 0 8px 32px rgba(44, 44, 44, 0.2);
+    /* Shadows - More colorful */
+    --shadow-sm: 0 2px 8px rgba(233, 30, 140, 0.1);
+    --shadow-md: 0 4px 16px rgba(233, 30, 140, 0.15);
+    --shadow-lg: 0 8px 32px rgba(233, 30, 140, 0.2);
+    --shadow-turquoise: 0 4px 16px rgba(0, 206, 209, 0.3);
 
     /* Border Radius */
     --radius-sm: 8px;
     --radius-md: 12px;
-    --radius-lg: 16px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
 }
 
 /* ========================================
@@ -65,10 +70,27 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--charcoal);
-    background-color: var(--background);
+    background: var(--background);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+}
+
+/* Tropical decorative background pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(233, 30, 140, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(0, 206, 209, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 111, 97, 0.03) 0%, transparent 70%);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -91,7 +113,7 @@ img {
 }
 
 /* ========================================
-   Loading Overlay
+   Loading Overlay - Lilly Pulitzer Style
    ======================================== */
 .loading-overlay {
     position: fixed;
@@ -99,7 +121,10 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 240, 245, 0.95);
+    background: linear-gradient(135deg,
+        rgba(255, 245, 248, 0.98),
+        rgba(252, 142, 172, 0.15),
+        rgba(0, 206, 209, 0.1));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -114,23 +139,33 @@ img {
 }
 
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--pink-paradise);
+    width: 60px;
+    height: 60px;
+    border: 5px solid var(--flamingo);
     border-top-color: var(--hot-pink);
+    border-right-color: var(--coral);
+    border-bottom-color: var(--turquoise);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spinColorful 1s linear infinite;
 }
 
 .loading-text {
-    margin-top: var(--spacing-md);
-    font-size: 1.1rem;
-    color: var(--charcoal);
-    font-weight: 500;
+    margin-top: var(--spacing-lg);
+    font-size: 1.2rem;
+    color: var(--hot-pink);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes spin {
+@keyframes spinColorful {
     to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
 }
 
 /* ========================================
@@ -178,46 +213,65 @@ img {
 }
 
 /* ========================================
-   Buttons
+   Buttons - Lilly Pulitzer Bold Style
    ======================================== */
 .btn {
-    padding: 1rem 2rem;
+    padding: 1rem 2.5rem;
     font-size: 1rem;
-    font-weight: 500;
-    border-radius: var(--radius-md);
+    font-weight: 600;
+    border-radius: var(--radius-xl);
     transition: all var(--transition);
     display: inline-block;
     text-align: center;
     min-width: 200px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--hot-pink), var(--pink-paradise));
+    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--coral) 50%, var(--flamingo) 100%);
     color: white;
-    box-shadow: var(--shadow-sm);
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(233, 30, 140, 0.4);
+    border: 3px solid transparent;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    background: linear-gradient(135deg, var(--pink-paradise), var(--hot-pink));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 25px rgba(233, 30, 140, 0.5);
 }
 
 .btn-primary:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
 }
 
 .btn-secondary {
-    background: var(--turquoise);
+    background: linear-gradient(135deg, var(--turquoise), var(--ocean-blue));
     color: var(--white);
-    font-weight: 500;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 206, 209, 0.3);
 }
 
 .btn-secondary:hover {
-    background: #2BC5B4;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 206, 209, 0.4);
+    background: linear-gradient(135deg, var(--ocean-blue), var(--turquoise));
 }
 
 .btn-back {
@@ -227,18 +281,27 @@ img {
     font-size: 1rem;
     margin-bottom: var(--spacing-md);
     transition: var(--transition);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 500;
 }
 
 .btn-back:hover {
-    color: var(--pink-paradise);
+    color: var(--coral);
+    transform: translateX(-5px);
 }
 
 /* ========================================
-   Landing Screen
+   Landing Screen - Lilly Pulitzer Paradise
    ======================================== */
 #landingScreen {
     position: relative;
-    background: linear-gradient(135deg, var(--white) 0%, var(--soft-pink) 50%, rgba(64, 224, 208, 0.1) 100%);
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(255, 245, 248, 0.9) 30%,
+            rgba(252, 142, 172, 0.15) 60%,
+            rgba(0, 206, 209, 0.1) 100%);
     overflow: hidden;
 }
 
@@ -257,33 +320,45 @@ img {
     text-align: center;
     z-index: 2;
     position: relative;
+    padding: var(--spacing-lg);
 }
 
 .landing-title {
-    font-size: 4rem;
+    font-size: 5rem;
     font-weight: 700;
-    color: var(--hot-pink);
-    margin-bottom: var(--spacing-md);
-    text-shadow: 2px 2px 4px rgba(233, 30, 140, 0.15);
+    background: linear-gradient(135deg, var(--hot-pink), var(--coral), var(--flamingo));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-sm);
+    text-shadow: none;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.1); }
 }
 
 .landing-subtitle {
     font-size: 1.8rem;
     font-family: var(--font-heading);
-    color: var(--charcoal);
+    color: var(--turquoise);
     margin-bottom: var(--spacing-lg);
-    font-weight: 400;
+    font-weight: 500;
+    font-style: italic;
 }
 
 .landing-description {
     font-size: 1.1rem;
     color: #555;
-    max-width: 600px;
+    max-width: 550px;
     margin: 0 auto var(--spacing-xl);
-    line-height: 1.8;
-    font-weight: 300;
+    line-height: 1.9;
+    font-weight: 400;
 }
 
+/* Tropical decorative elements */
 .landing-particles {
     position: absolute;
     top: 0;
@@ -292,38 +367,77 @@ img {
     height: 100%;
     overflow: hidden;
     z-index: 1;
-    pointer-events: none;  /* Allow clicks to pass through to button */
+    pointer-events: none;
 }
 
+/* Decorative blobs */
 .landing-particles::before,
 .landing-particles::after {
     content: '';
     position: absolute;
-    width: 300px;
-    height: 300px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(233, 30, 140, 0.08), transparent);
-    animation: float 20s infinite ease-in-out;
-}
-
-.landing-particles::after {
-    background: radial-gradient(circle, rgba(64, 224, 208, 0.08), transparent);
+    animation: floatBlob 15s infinite ease-in-out;
 }
 
 .landing-particles::before {
-    top: -100px;
+    width: 400px;
+    height: 400px;
+    top: -150px;
     left: -100px;
+    background: radial-gradient(circle,
+        rgba(233, 30, 140, 0.12) 0%,
+        rgba(255, 111, 97, 0.08) 50%,
+        transparent 70%);
 }
 
 .landing-particles::after {
+    width: 350px;
+    height: 350px;
     bottom: -100px;
-    right: -100px;
-    animation-delay: -10s;
+    right: -80px;
+    background: radial-gradient(circle,
+        rgba(0, 206, 209, 0.15) 0%,
+        rgba(78, 205, 196, 0.08) 50%,
+        transparent 70%);
+    animation-delay: -7s;
 }
 
-@keyframes float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(50px, 50px) scale(1.1); }
+@keyframes floatBlob {
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    33% { transform: translate(30px, -30px) scale(1.05) rotate(5deg); }
+    66% { transform: translate(-20px, 20px) scale(0.95) rotate(-5deg); }
+}
+
+/* Extra decorative flower shapes */
+#landingScreen::before,
+#landingScreen::after {
+    content: '🌺';
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.15;
+    z-index: 0;
+    animation: floatFlower 20s infinite ease-in-out;
+}
+
+#landingScreen::before {
+    top: 15%;
+    right: 10%;
+    animation-delay: -5s;
+}
+
+#landingScreen::after {
+    content: '🌸';
+    bottom: 20%;
+    left: 8%;
+    font-size: 2.5rem;
+    animation-delay: -12s;
+}
+
+@keyframes floatFlower {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(15px, -20px) rotate(10deg); }
+    50% { transform: translate(-10px, 15px) rotate(-5deg); }
+    75% { transform: translate(20px, 10px) rotate(15deg); }
 }
 
 /* Animation delays */
@@ -358,91 +472,151 @@ img {
 }
 
 /* ========================================
-   Choice Screen
+   Choice Screen - Lilly Pulitzer Cards
    ======================================== */
 .choice-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
-    max-width: 800px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    max-width: 850px;
     margin: 0 auto;
 }
 
 .choice-card {
     background: var(--white);
     padding: var(--spacing-xl);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
     text-align: center;
     transition: all var(--transition);
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 3px solid var(--flamingo);
+    position: relative;
+    overflow: hidden;
+}
+
+.choice-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--hot-pink), var(--coral), var(--turquoise), var(--palm-green));
+}
+
+.choice-card:first-child {
+    border-color: var(--turquoise);
+}
+
+.choice-card:first-child::before {
+    background: linear-gradient(90deg, var(--turquoise), var(--ocean-blue), var(--palm-green));
 }
 
 .choice-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--pink-paradise);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(233, 30, 140, 0.2);
+}
+
+.choice-card:first-child:hover {
+    box-shadow: 0 15px 40px rgba(0, 206, 209, 0.2);
 }
 
 .choice-icon {
-    font-size: 3rem;
+    font-size: 4rem;
     margin-bottom: var(--spacing-md);
+    display: inline-block;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .choice-card h3 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin-bottom: var(--spacing-sm);
-    color: var(--charcoal);
+    color: var(--hot-pink);
+}
+
+.choice-card:first-child h3 {
+    color: var(--turquoise);
 }
 
 .choice-card p {
     color: #666;
     margin-bottom: var(--spacing-lg);
-    font-size: 0.95rem;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 /* ========================================
-   Gallery Screen
+   Gallery Screen - Lilly Pulitzer Style
    ======================================== */
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
     margin-top: var(--spacing-xl);
 }
 
 .ring-card {
     background: var(--white);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     transition: all var(--transition);
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 3px solid transparent;
+    position: relative;
+}
+
+.ring-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--hot-pink), var(--coral), var(--turquoise));
+    opacity: 0;
+    transition: opacity var(--transition);
 }
 
 .ring-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--turquoise);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(233, 30, 140, 0.2);
+    border-color: var(--flamingo);
+}
+
+.ring-card:hover::after {
+    opacity: 1;
 }
 
 .ring-card-image {
     width: 100%;
-    height: 300px;
+    height: 280px;
     object-fit: cover;
-    background: var(--soft-pink);
+    background: linear-gradient(135deg, var(--soft-pink), rgba(0, 206, 209, 0.1));
+    transition: transform var(--transition);
+}
+
+.ring-card:hover .ring-card-image {
+    transform: scale(1.05);
 }
 
 .ring-card-content {
     padding: var(--spacing-md);
+    position: relative;
+    overflow: hidden;
 }
 
 .ring-card-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-bottom: var(--spacing-xs);
-    color: var(--charcoal);
+    color: var(--hot-pink);
+    font-weight: 600;
 }
 
 .ring-card-tags {
@@ -453,29 +627,31 @@ img {
 }
 
 .ring-tag {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 12px;
-    font-weight: 600;
+    font-size: 0.65rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .ring-tag.diamond {
-    background: var(--pink-paradise);
+    background: linear-gradient(135deg, var(--hot-pink), var(--coral));
     color: white;
+    box-shadow: 0 2px 8px rgba(233, 30, 140, 0.3);
 }
 
 .ring-tag.metal {
-    background: var(--turquoise);
+    background: linear-gradient(135deg, var(--turquoise), var(--ocean-blue));
     color: white;
+    box-shadow: 0 2px 8px rgba(0, 206, 209, 0.3);
 }
 
 .ring-card-description {
     font-size: 0.9rem;
     color: #666;
     margin-bottom: var(--spacing-md);
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .ring-card .btn {
@@ -503,19 +679,20 @@ img {
 .designer-form textarea {
     width: 100%;
     padding: var(--spacing-md);
-    border: 2px solid var(--pink-paradise);
-    border-radius: var(--radius-md);
+    border: 3px solid var(--flamingo);
+    border-radius: var(--radius-lg);
     font-family: var(--font-body);
     font-size: 1rem;
     resize: vertical;
-    transition: border-color var(--transition);
+    transition: all var(--transition);
     background: var(--white);
 }
 
 .designer-form textarea:focus {
     outline: none;
     border-color: var(--hot-pink);
-    box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.1);
+    box-shadow: 0 0 0 4px rgba(233, 30, 140, 0.15),
+                0 4px 15px rgba(233, 30, 140, 0.1);
 }
 
 .char-counter {
@@ -559,32 +736,54 @@ img {
 }
 
 /* ========================================
-   Inline Ring Guide (Integrated with Prompt)
+   Inline Ring Guide - Lilly Pulitzer Style
    ======================================== */
 .inline-ring-guide {
-    background: linear-gradient(135deg, var(--soft-pink), rgba(64, 224, 208, 0.08));
-    border-radius: var(--radius-md);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(252, 142, 172, 0.15),
+        rgba(0, 206, 209, 0.1));
+    border-radius: var(--radius-lg);
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
-    border: 1px solid var(--pink-paradise);
+    border: 2px solid var(--flamingo);
+    position: relative;
+    overflow: hidden;
+}
+
+.inline-ring-guide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+        var(--hot-pink),
+        var(--coral),
+        var(--sunny-gold),
+        var(--turquoise),
+        var(--palm-green));
 }
 
 .guide-intro {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--hot-pink);
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: var(--spacing-sm);
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .guide-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.6rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 1px dashed rgba(233, 30, 140, 0.15);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px dotted rgba(252, 142, 172, 0.3);
 }
 
 .guide-row:last-child {
@@ -595,42 +794,82 @@ img {
 
 .guide-label {
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--turquoise);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: 60px;
+    letter-spacing: 1px;
+    min-width: 65px;
     flex-shrink: 0;
 }
 
 .guide-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.4rem;
     flex: 1;
 }
 
 .guide-chip {
-    padding: 0.25rem 0.65rem;
+    padding: 0.35rem 0.75rem;
     background: var(--white);
-    border: 1px solid var(--pink-paradise);
-    border-radius: 12px;
+    border: 2px solid var(--flamingo);
+    border-radius: 20px;
     font-size: 0.7rem;
-    color: var(--charcoal);
+    font-weight: 600;
+    color: var(--hot-pink);
     cursor: pointer;
     transition: all var(--transition);
     white-space: nowrap;
 }
 
 .guide-chip:hover {
-    background: var(--pink-paradise);
+    background: linear-gradient(135deg, var(--hot-pink), var(--coral));
     color: white;
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(233, 30, 140, 0.2);
+    border-color: var(--hot-pink);
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3);
 }
 
 .guide-chip:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
+}
+
+/* Alternate chip colors by row */
+.guide-row:nth-child(2) .guide-chip {
+    border-color: var(--coral);
+    color: var(--coral);
+}
+.guide-row:nth-child(2) .guide-chip:hover {
+    background: linear-gradient(135deg, var(--coral), var(--flamingo));
+    border-color: var(--coral);
+}
+
+.guide-row:nth-child(3) .guide-chip {
+    border-color: var(--turquoise);
+    color: var(--turquoise);
+}
+.guide-row:nth-child(3) .guide-chip:hover {
+    background: linear-gradient(135deg, var(--turquoise), var(--ocean-blue));
+    border-color: var(--turquoise);
+}
+
+.guide-row:nth-child(4) .guide-chip {
+    border-color: var(--palm-green);
+    color: var(--palm-green);
+}
+.guide-row:nth-child(4) .guide-chip:hover {
+    background: linear-gradient(135deg, var(--palm-green), var(--ocean-blue));
+    border-color: var(--palm-green);
+}
+
+.guide-row:nth-child(5) .guide-chip {
+    border-color: var(--sunny-gold);
+    color: #B8860B;
+}
+.guide-row:nth-child(5) .guide-chip:hover {
+    background: linear-gradient(135deg, var(--sunny-gold), var(--coral));
+    border-color: var(--sunny-gold);
+    color: white;
 }
 
 /* ========================================
@@ -819,35 +1058,76 @@ img {
 }
 
 /* ========================================
-   Thank You Screen
+   Thank You Screen - Celebration Mode!
    ======================================== */
+#thankYouScreen {
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.95),
+        rgba(252, 142, 172, 0.2),
+        rgba(0, 206, 209, 0.15));
+    position: relative;
+    overflow: hidden;
+}
+
+#thankYouScreen::before,
+#thankYouScreen::after {
+    content: '💕';
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.2;
+    animation: floatHearts 8s infinite ease-in-out;
+}
+
+#thankYouScreen::before {
+    top: 10%;
+    left: 5%;
+}
+
+#thankYouScreen::after {
+    content: '✨';
+    bottom: 15%;
+    right: 8%;
+    animation-delay: -4s;
+}
+
+@keyframes floatHearts {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
 .thankyou-content {
     max-width: 700px;
     margin: 0 auto;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .thankyou-icon {
-    font-size: 5rem;
+    font-size: 6rem;
     margin-bottom: var(--spacing-lg);
     animation: heartbeat 1.5s infinite;
+    filter: drop-shadow(0 4px 15px rgba(233, 30, 140, 0.3));
 }
 
 @keyframes heartbeat {
     0%, 100% { transform: scale(1); }
-    10%, 30% { transform: scale(1.1); }
+    10%, 30% { transform: scale(1.15); }
     20%, 40% { transform: scale(1); }
 }
 
 .thankyou-title {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     margin-bottom: var(--spacing-md);
-    color: var(--hot-pink);
+    background: linear-gradient(135deg, var(--hot-pink), var(--coral), var(--flamingo));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .thankyou-message {
     font-size: 1.2rem;
-    line-height: 1.8;
+    line-height: 2;
     color: #555;
     margin-bottom: var(--spacing-xl);
 }
@@ -855,28 +1135,39 @@ img {
 .thankyou-ring-preview {
     background: var(--white);
     padding: var(--spacing-xl);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 10px 40px rgba(233, 30, 140, 0.15);
     margin-bottom: var(--spacing-xl);
-    border: 3px solid var(--pink-paradise);
+    border: 4px solid transparent;
+    background-image: linear-gradient(white, white),
+                      linear-gradient(135deg, var(--hot-pink), var(--coral), var(--turquoise));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .thankyou-ring-preview img {
     max-height: 400px;
     margin: 0 auto;
+    border-radius: var(--radius-md);
 }
 
 .thankyou-note {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-style: italic;
     color: #666;
+    line-height: 2;
 }
 
 .signature {
     font-family: var(--font-heading);
-    font-size: 1.3rem;
-    color: var(--hot-pink);
-    font-weight: 600;
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--hot-pink), var(--coral));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: var(--spacing-sm);
 }
 
 /* ========================================
