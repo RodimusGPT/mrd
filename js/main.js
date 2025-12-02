@@ -17,13 +17,10 @@ const app = {
     init() {
         console.log('💎 Maria\'s Ring Designer initialized');
 
-        // Load gallery rings
-        this.loadGallery();
-
         // Setup text area character counter
         this.setupCharCounter();
 
-        // Setup ring terminology guide
+        // Setup ring terminology guide with live preview
         this.setupRingGuide();
 
         // Check if there's a saved design
@@ -83,7 +80,7 @@ const app = {
     },
 
     /**
-     * Insert term into active input field
+     * Insert term into active input field AND show live preview
      */
     insertTerm(term) {
         const textarea = document.getElementById('ringDescription');
@@ -104,6 +101,42 @@ const app = {
             if (activeField === textarea) {
                 document.getElementById('charCount').textContent = activeField.value.length;
             }
+        }
+
+        // Show live preview for this term
+        this.showTermPreview(term);
+    },
+
+    /**
+     * Show live preview image for a selected term
+     */
+    showTermPreview(term) {
+        const previewContainer = document.getElementById('livePreviewContainer');
+        const previewImage = document.getElementById('livePreviewImage');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewCaption = document.getElementById('previewCaption');
+
+        if (!previewContainer || !CONFIG.TERM_EXAMPLES) return;
+
+        // Find the example for this term
+        const example = CONFIG.TERM_EXAMPLES[term];
+
+        if (example) {
+            // Hide placeholder, show image
+            if (previewPlaceholder) previewPlaceholder.style.display = 'none';
+            if (previewImage) {
+                previewImage.src = example.image;
+                previewImage.style.display = 'block';
+                previewImage.alt = term;
+            }
+            if (previewCaption) {
+                previewCaption.textContent = example.caption;
+                previewCaption.style.display = 'block';
+            }
+
+            // Add a subtle animation
+            previewContainer.classList.add('preview-updated');
+            setTimeout(() => previewContainer.classList.remove('preview-updated'), 300);
         }
     },
 
@@ -135,82 +168,11 @@ const app = {
      * Go back to previous screen
      */
     goBack() {
-        if (this.previousScreen) {
-            if (this.previousScreen === 'galleryScreen') {
-                this.showScreen('galleryScreen');
-            } else if (this.previousScreen === 'designerScreen') {
-                this.showScreen('designerScreen');
-            } else {
-                this.showScreen('choiceScreen');
-            }
+        if (this.previousScreen === 'designerScreen') {
+            this.showScreen('designerScreen');
         } else {
-            this.showScreen('choiceScreen');
+            this.showScreen('landingScreen');
         }
-    },
-
-    /**
-     * Load curated ring gallery
-     */
-    loadGallery() {
-        const galleryGrid = document.getElementById('galleryGrid');
-        galleryGrid.innerHTML = '';
-
-        CONFIG.CURATED_RINGS.forEach(ring => {
-            const card = this.createRingCard(ring);
-            galleryGrid.appendChild(card);
-        });
-    },
-
-    /**
-     * Create a ring card element with diamond/style metadata
-     */
-    createRingCard(ring) {
-        const card = document.createElement('div');
-        card.className = 'ring-card';
-        // Use fallbackUrl directly since we're using Unsplash URLs
-        const imageUrl = ring.imageUrl || ring.fallbackUrl;
-        card.innerHTML = `
-            <img
-                src="${imageUrl}"
-                alt="${ring.title}"
-                class="ring-card-image"
-                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&q=80'"
-            >
-            <div class="ring-card-content">
-                <h3 class="ring-card-title">${ring.title}</h3>
-                <div class="ring-card-tags">
-                    <span class="ring-tag diamond">${ring.diamond || 'Diamond'}</span>
-                    <span class="ring-tag metal">${ring.metal || 'Platinum'}</span>
-                </div>
-                <p class="ring-card-description">${ring.description}</p>
-                <button class="btn btn-secondary" onclick="app.selectGalleryRing(${ring.id})">
-                    Select This Design
-                </button>
-            </div>
-        `;
-        return card;
-    },
-
-    /**
-     * Handle gallery ring selection
-     */
-    selectGalleryRing(ringId) {
-        const ring = CONFIG.CURATED_RINGS.find(r => r.id === ringId);
-        if (!ring) return;
-
-        console.log('Gallery ring selected:', ring.title);
-
-        // Store the design
-        this.currentDesign = {
-            type: 'gallery',
-            ring: ring,
-            imageUrl: ring.imageUrl,
-            description: ring.description,
-            title: ring.title
-        };
-
-        // Show preview
-        this.showPreview();
     },
 
     /**
@@ -442,16 +404,8 @@ const app = {
         const previewImage = document.getElementById('previewImage');
         const previewDescription = document.getElementById('previewDescription');
 
-        if (this.currentDesign.type === 'gallery') {
-            previewImage.src = this.currentDesign.imageUrl;
-            previewImage.onerror = () => {
-                previewImage.src = this.currentDesign.ring.fallbackUrl;
-            };
-            previewDescription.textContent = this.currentDesign.description;
-        } else {
-            previewImage.src = this.currentDesign.imageUrl;
-            previewDescription.textContent = this.currentDesign.description;
-        }
+        previewImage.src = this.currentDesign.imageUrl;
+        previewDescription.textContent = this.currentDesign.description;
 
         // Navigate to preview screen
         this.showScreen('previewScreen');
@@ -564,9 +518,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 // SECRET ADMIN FUNCTIONS
 // Press keys to access after proposal
+// Only triggers when NOT focused on input fields
 // ============================================
 
 document.addEventListener('keydown', async (e) => {
+    // Don't trigger shortcuts when typing in input fields
+    const activeElement = document.activeElement;
+    const isTyping = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable
+    );
+
+    if (isTyping) return;
+
     // Press 'A' - View localStorage design
     if (e.key === 'A' || e.key === 'a') {
         const saved = localStorage.getItem('maria_ring_design');
