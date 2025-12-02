@@ -11,10 +11,14 @@ const app = {
         iteration: 0
     },
 
+    // Cached AI-generated term previews
+    termPreviewCache: {},
+    termGenerating: {}, // Track which terms are currently generating
+
     /**
      * Initialize the application
      */
-    init() {
+    async init() {
         console.log('💎 Maria\'s Ring Designer initialized');
 
         // Setup text area character counter
@@ -23,11 +27,46 @@ const app = {
         // Setup ring terminology guide with live preview
         this.setupRingGuide();
 
+        // Load cached term previews from Firebase
+        await this.loadCachedPreviews();
+
         // Check if there's a saved design
         this.checkSavedDesign();
 
         // Show landing screen
         this.showScreen('landingScreen');
+    },
+
+    /**
+     * Load cached term previews from Firebase
+     */
+    async loadCachedPreviews() {
+        try {
+            const result = await FirebaseClient.getTermPreviews();
+            if (result.success && result.data) {
+                this.termPreviewCache = result.data;
+                console.log(`💎 Loaded ${Object.keys(result.data).length} cached previews`);
+            }
+        } catch (error) {
+            console.warn('Could not load cached previews:', error);
+        }
+    },
+
+    /**
+     * Get category for a term (for prompt generation)
+     */
+    getTermCategory(term) {
+        const categories = {
+            shapes: ['Round Brilliant', 'Princess', 'Cushion', 'Oval', 'Pear', 'Emerald', 'Marquise', 'Radiant', 'Asscher'],
+            settings: ['Solitaire', 'Halo', 'Three-Stone', 'Pavé', 'Channel-Set', 'Bezel', 'Cathedral'],
+            metals: ['Platinum', 'White Gold', 'Yellow Gold', 'Rose Gold'],
+            accents: ['Hidden Halo', 'Side Stones', 'Split Shank', 'Milgrain', 'Filigree']
+        };
+
+        for (const [category, terms] of Object.entries(categories)) {
+            if (terms.includes(term)) return category;
+        }
+        return 'shapes'; // default
     },
 
     /**
@@ -109,34 +148,122 @@ const app = {
 
     /**
      * Show live preview image for a selected term
+     * Uses AI-generated images with Firebase caching
      */
-    showTermPreview(term) {
+    async showTermPreview(term) {
         const previewContainer = document.getElementById('livePreviewContainer');
         const previewImage = document.getElementById('livePreviewImage');
         const previewPlaceholder = document.getElementById('previewPlaceholder');
         const previewCaption = document.getElementById('previewCaption');
 
-        if (!previewContainer || !CONFIG.TERM_EXAMPLES) return;
+        if (!previewContainer) return;
 
-        // Find the example for this term
-        const example = CONFIG.TERM_EXAMPLES[term];
+        const category = this.getTermCategory(term);
+        const caption = `${term} Engagement Ring`;
 
-        if (example) {
-            // Hide placeholder, show image
-            if (previewPlaceholder) previewPlaceholder.style.display = 'none';
-            if (previewImage) {
-                previewImage.src = example.image;
-                previewImage.style.display = 'block';
-                previewImage.alt = term;
+        // Check if we have a cached AI-generated preview
+        if (this.termPreviewCache[term]?.imageUrl) {
+            this.displayPreview(this.termPreviewCache[term].imageUrl, caption);
+            return;
+        }
+
+        // Check if already generating this term
+        if (this.termGenerating[term]) {
+            console.log(`⏳ Already generating: ${term}`);
+            return;
+        }
+
+        // Show loading state
+        if (previewPlaceholder) {
+            previewPlaceholder.innerHTML = `
+                <span class="placeholder-icon">✨</span>
+                <p>Generating ${term} preview...</p>
+            `;
+            previewPlaceholder.style.display = 'block';
+        }
+        if (previewImage) previewImage.style.display = 'none';
+        if (previewCaption) previewCaption.style.display = 'none';
+
+        // Mark as generating
+        this.termGenerating[term] = true;
+
+        try {
+            // Generate the preview using AI
+            const result = await FalAPI.generateTermPreview(term, category);
+
+            if (result.success && result.imageUrl) {
+                // Cache in memory
+                this.termPreviewCache[term] = {
+                    imageUrl: result.imageUrl,
+                    caption: caption
+                };
+
+                // Cache in Firebase for persistence
+                FirebaseClient.saveTermPreview(term, result.imageUrl, caption);
+
+                // Display the generated image
+                this.displayPreview(result.imageUrl, caption);
+
+                console.log(`✨ Generated and cached: ${term}`);
+            } else {
+                // Fallback to static image if generation fails
+                const fallback = CONFIG.TERM_EXAMPLES?.[term];
+                if (fallback) {
+                    this.displayPreview(fallback.image, fallback.caption);
+                } else {
+                    this.showPreviewError(term);
+                }
             }
-            if (previewCaption) {
-                previewCaption.textContent = example.caption;
-                previewCaption.style.display = 'block';
+        } catch (error) {
+            console.error(`Preview generation failed for ${term}:`, error);
+            // Fallback to static image
+            const fallback = CONFIG.TERM_EXAMPLES?.[term];
+            if (fallback) {
+                this.displayPreview(fallback.image, fallback.caption);
             }
+        } finally {
+            this.termGenerating[term] = false;
+        }
+    },
 
-            // Add a subtle animation
+    /**
+     * Display a preview image
+     */
+    displayPreview(imageUrl, caption) {
+        const previewContainer = document.getElementById('livePreviewContainer');
+        const previewImage = document.getElementById('livePreviewImage');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewCaption = document.getElementById('previewCaption');
+
+        if (previewPlaceholder) previewPlaceholder.style.display = 'none';
+        if (previewImage) {
+            previewImage.src = imageUrl;
+            previewImage.style.display = 'block';
+            previewImage.alt = caption;
+        }
+        if (previewCaption) {
+            previewCaption.textContent = caption;
+            previewCaption.style.display = 'block';
+        }
+
+        // Add animation
+        if (previewContainer) {
             previewContainer.classList.add('preview-updated');
             setTimeout(() => previewContainer.classList.remove('preview-updated'), 300);
+        }
+    },
+
+    /**
+     * Show error state in preview
+     */
+    showPreviewError(term) {
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        if (previewPlaceholder) {
+            previewPlaceholder.innerHTML = `
+                <span class="placeholder-icon">💎</span>
+                <p>Couldn't load ${term} preview</p>
+            `;
+            previewPlaceholder.style.display = 'block';
         }
     },
 

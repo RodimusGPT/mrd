@@ -113,5 +113,90 @@ const FirebaseClient = {
             return { success: true, data: sorted[0] };
         }
         return { success: false, error: 'No designs found' };
+    },
+
+    // =============================================
+    // Term Preview Caching (AI-generated examples)
+    // =============================================
+
+    /**
+     * Get all cached term preview images
+     */
+    async getTermPreviews() {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured' };
+        }
+
+        try {
+            const response = await fetch(`${this.baseUrl}/term_previews`);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return { success: true, data: {} }; // No previews yet
+                }
+                throw new Error(`Firebase error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const previews = {};
+
+            (result.documents || []).forEach(doc => {
+                const term = doc.fields?.term?.stringValue;
+                if (term) {
+                    previews[term] = {
+                        imageUrl: doc.fields?.image_url?.stringValue,
+                        caption: doc.fields?.caption?.stringValue,
+                        generatedAt: doc.fields?.generated_at?.timestampValue
+                    };
+                }
+            });
+
+            return { success: true, data: previews };
+
+        } catch (error) {
+            console.error('Firebase fetch previews error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    /**
+     * Save a generated term preview to Firebase
+     */
+    async saveTermPreview(term, imageUrl, caption) {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured' };
+        }
+
+        try {
+            // Use term as document ID (sanitized)
+            const docId = term.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+            const docData = {
+                fields: {
+                    term: { stringValue: term },
+                    image_url: { stringValue: imageUrl },
+                    caption: { stringValue: caption },
+                    generated_at: { timestampValue: new Date().toISOString() }
+                }
+            };
+
+            const response = await fetch(`${this.baseUrl}/term_previews/${docId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(docData)
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            console.log(`✅ Preview cached for: ${term}`);
+            return { success: true };
+
+        } catch (error) {
+            console.error('Firebase save preview error:', error);
+            return { success: false, error: error.message };
+        }
     }
 };
