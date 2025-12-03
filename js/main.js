@@ -636,7 +636,10 @@ const app = {
                 this.currentDesign.description += ` | Refinement: ${refinement}`;
                 this.currentDesign.conversationHistory = [...this.conversation.history];
 
-                // Update the conversation display
+                // Update the main preview with the new design
+                this.displayPreview(result.imageUrl, `Version ${this.conversation.iteration}`);
+
+                // Update the conversation display (past versions)
                 this.updateConversationDisplay();
 
                 // Clear refinement input
@@ -665,28 +668,41 @@ const app = {
         if (designFlow) designFlow.style.display = 'none';
         if (conversationMode) conversationMode.style.display = 'block';
 
-        // Update the display
+        // Update the main preview to show current design
+        if (this.currentDesign) {
+            this.displayPreview(this.currentDesign.imageUrl, `Version ${this.conversation.iteration}`);
+        }
+
+        // Update the conversation history (past versions only)
         this.updateConversationDisplay();
     },
 
     /**
-     * Update the conversation display with all history
+     * Update the conversation display - only show PAST versions as thumbnails
+     * Current version is shown in the main preview panel
      */
     updateConversationDisplay() {
         const container = document.getElementById('conversationHistory');
+        if (!container) return;
 
-        container.innerHTML = this.conversation.history.map((item, index) => `
-            <div class="conversation-message">
-                <div class="message-prompt">${item.prompt}</div>
-                <div class="message-image">
-                    <img src="${item.imageUrl}" alt="Design iteration ${item.iteration}">
+        // Only show past versions (not the current one)
+        const pastVersions = this.conversation.history.slice(0, -1);
+
+        if (pastVersions.length === 0) {
+            container.innerHTML = '<p class="no-history">This is your first design. Refine it or save it!</p>';
+        } else {
+            container.innerHTML = `
+                <p class="history-label">Previous versions:</p>
+                <div class="history-thumbnails">
+                    ${pastVersions.map((item) => `
+                        <div class="history-thumb" onclick="app.displayPreview('${item.imageUrl}', 'Version ${item.iteration}')">
+                            <img src="${item.imageUrl}" alt="Version ${item.iteration}">
+                            <span>V${item.iteration}</span>
+                        </div>
+                    `).join('')}
                 </div>
-                <div class="message-iteration">Version ${item.iteration}${index === this.conversation.history.length - 1 ? ' (Current)' : ''}</div>
-            </div>
-        `).join('');
-
-        // Scroll to bottom
-        container.scrollTop = container.scrollHeight;
+            `;
+        }
     },
 
     /**

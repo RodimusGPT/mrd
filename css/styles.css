@@ -3245,6 +3245,80 @@ img {
     display: block;
 }
 
+/* History thumbnails for past versions */
+.no-history {
+    text-align: center;
+    color: var(--hot-pink);
+    font-style: italic;
+    padding: var(--spacing-md);
+}
+
+.history-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: var(--spacing-xs);
+}
+
+.history-thumbnails {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.history-thumb {
+    width: 70px;
+    cursor: pointer;
+    text-align: center;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.history-thumb:hover {
+    transform: scale(1.05);
+}
+
+.history-thumb img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 2px solid transparent;
+    transition: border-color var(--transition);
+}
+
+.history-thumb:hover img {
+    border-color: var(--hot-pink);
+    box-shadow: var(--shadow-sm);
+}
+
+.history-thumb span {
+    display: block;
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Improved refinement actions layout */
+.refinement-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgba(233, 30, 140, 0.1);
+}
+
+.refinement-actions .btn {
+    flex: 1;
+    min-width: 120px;
+    max-width: 180px;
+}
+
+.refinement-actions .btn-reset {
+    flex: 0 0 auto;
+    min-width: auto;
+}
+
 /* Mobile adjustments for flow */
 @media (max-width: 600px) {
     .flow-section {
@@ -3278,5 +3352,22 @@ img {
 
     .browse-links {
         justify-content: center;
+    }
+
+    /* History thumbnails mobile */
+    .history-thumb {
+        width: 60px;
+    }
+
+    .history-thumb img {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Refinement actions mobile */
+    .refinement-actions .btn {
+        min-width: 100px;
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
     }
 }
