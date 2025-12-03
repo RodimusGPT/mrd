@@ -361,8 +361,8 @@ const app = {
 
         if (previewPlaceholder) {
             previewPlaceholder.innerHTML = `
-                <span class="placeholder-icon">💎</span>
-                <p>Tap ring terms below to see examples</p>
+                <span class="placeholder-icon">💍</span>
+                <p>Your ring preview will appear here</p>
             `;
             previewPlaceholder.style.display = 'block';
         }
