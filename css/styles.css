@@ -3074,20 +3074,20 @@ img {
 }
 
 /* ========================================
-   Inline Reference Image - Compact Design
+   Inline Reference Image - Clean Design
    ======================================== */
 .inline-reference {
     margin-top: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(0, 206, 209, 0.08);
-    border: 2px dashed var(--turquoise);
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(0, 206, 209, 0.05));
+    border: 1px solid rgba(0, 206, 209, 0.3);
     border-radius: var(--radius-md);
     transition: var(--transition);
 }
 
 .inline-reference:hover {
-    border-color: var(--hot-pink);
-    background: rgba(252, 142, 172, 0.08);
+    border-color: var(--turquoise);
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(0, 206, 209, 0.1));
 }
 
 /* Reference Preview (when image added) */
@@ -3131,112 +3131,107 @@ img {
     transform: scale(1.1);
 }
 
-/* Reference Options (when no image) */
+/* Reference Options - Clean Layout */
 .inline-reference-options {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.reference-header {
+    display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.inline-reference-label {
+.reference-icon {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.reference-title {
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--charcoal);
     opacity: 0.7;
 }
 
-.inline-reference-actions {
+/* Input Row */
+.reference-inputs {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    flex: 1;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
-.btn-inline-action {
-    padding: 0.4rem 0.8rem;
+.btn-upload {
+    padding: 0.5rem 1rem;
     background: linear-gradient(135deg, var(--turquoise), var(--ocean-blue));
     color: white;
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
 }
 
-.btn-inline-action:hover {
+.btn-upload:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-turquoise);
 }
 
-.inline-divider {
-    font-size: 0.75rem;
-    color: var(--charcoal);
-    opacity: 0.5;
-}
-
-.inline-url-input {
+.url-input-group {
     display: flex;
-    gap: 0.3rem;
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
 }
 
-.inline-url-input input {
-    width: 120px;
-    padding: 0.4rem 0.6rem;
-    border: 2px solid var(--flamingo);
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+.url-input-group input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--flamingo);
+    border-right: none;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    font-size: 0.85rem;
     transition: var(--transition);
 }
 
-.inline-url-input input:focus {
+.url-input-group input:focus {
     outline: none;
     border-color: var(--hot-pink);
-    width: 180px;
 }
 
-.btn-inline-add {
-    padding: 0.4rem 0.6rem;
+.url-input-group input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+.btn-url-add {
+    padding: 0.5rem 0.75rem;
     background: var(--flamingo);
     color: white;
     border: none;
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
 }
 
-.btn-inline-add:hover {
+.btn-url-add:hover {
     background: var(--hot-pink);
 }
 
-.inline-browse-links {
-    display: flex;
-    gap: 0.4rem;
-}
-
-.inline-browse-links a {
-    font-size: 0.75rem;
-    color: var(--turquoise);
-    text-decoration: none;
-    padding: 0.3rem 0.5rem;
-    background: rgba(0, 206, 209, 0.1);
-    border-radius: var(--radius-sm);
-    transition: var(--transition);
-}
-
-.inline-browse-links a:hover {
-    background: var(--turquoise);
-    color: white;
-}
-
+/* URL Status */
 .url-status {
-    width: 100%;
-    margin-top: 0.3rem;
     font-size: 0.75rem;
+    min-height: 1rem;
+}
+
+.url-status:empty {
+    display: none;
 }
 
 .url-status.error {
@@ -3245,6 +3240,39 @@ img {
 
 .url-status.success {
     color: var(--palm-green);
+}
+
+/* Browse Links */
+.browse-links {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    padding-top: 0.25rem;
+}
+
+.browse-label {
+    font-size: 0.75rem;
+    color: var(--charcoal);
+    opacity: 0.5;
+}
+
+.browse-links a {
+    font-size: 0.75rem;
+    color: var(--turquoise);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.browse-links a:hover {
+    color: var(--hot-pink);
+    text-decoration: underline;
+}
+
+.browse-dot {
+    font-size: 0.7rem;
+    color: var(--charcoal);
+    opacity: 0.3;
 }
 
 /* Generate Section */
@@ -3303,27 +3331,22 @@ img {
     }
 
     /* Inline reference mobile */
-    .inline-reference-options {
+    .reference-inputs {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 0.5rem;
     }
 
-    .inline-reference-actions {
-        width: 100%;
-        justify-content: flex-start;
+    .btn-upload {
+        text-align: center;
     }
 
-    .inline-url-input input {
-        width: 100px;
+    .url-input-group {
+        min-width: unset;
+        max-width: unset;
     }
 
-    .inline-url-input input:focus {
-        width: 140px;
-    }
-
-    .inline-browse-links {
-        width: 100%;
-        justify-content: flex-start;
-        margin-top: 0.3rem;
+    .browse-links {
+        justify-content: center;
     }
 }

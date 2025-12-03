@@ -117,9 +117,12 @@
 
                                     <!-- Reference Options (shown when no image) -->
                                     <div class="inline-reference-options" id="referenceOptions">
-                                        <span class="inline-reference-label">📷 Add inspiration</span>
-                                        <div class="inline-reference-actions">
-                                            <label class="btn-inline-action" for="ringFileInput">
+                                        <div class="reference-header">
+                                            <span class="reference-icon">📷</span>
+                                            <span class="reference-title">Add inspiration photo</span>
+                                        </div>
+                                        <div class="reference-inputs">
+                                            <label class="btn-upload" for="ringFileInput">
                                                 Upload
                                                 <input
                                                     type="file"
@@ -128,24 +131,25 @@
                                                     class="file-input-hidden"
                                                 >
                                             </label>
-                                            <span class="inline-divider">or</span>
-                                            <div class="inline-url-input">
+                                            <div class="url-input-group">
                                                 <input
                                                     type="url"
                                                     id="ringUrlInput"
-                                                    placeholder="Paste URL"
+                                                    placeholder="paste image URL"
                                                     autocomplete="off"
                                                 >
-                                                <button class="btn-inline-add" onclick="app.importReferenceUrl()">Add</button>
-                                            </div>
-                                            <span class="inline-divider">or</span>
-                                            <div class="inline-browse-links">
-                                                <a href="https://www.tiffany.com/engagement/engagement-rings/" target="_blank" rel="noopener" title="Tiffany">Tiffany</a>
-                                                <a href="https://www.cartier.com/en-us/jewelry/engagement-rings/" target="_blank" rel="noopener" title="Cartier">Cartier</a>
-                                                <a href="https://www.harrywinston.com/en/fine-jewelry/engagement-rings" target="_blank" rel="noopener" title="Harry Winston">HW</a>
+                                                <button class="btn-url-add" onclick="app.importReferenceUrl()">Add</button>
                                             </div>
                                         </div>
                                         <div class="url-status" id="urlStatus"></div>
+                                        <div class="browse-links">
+                                            <span class="browse-label">Browse:</span>
+                                            <a href="https://www.tiffany.com/engagement/engagement-rings/" target="_blank" rel="noopener">Tiffany</a>
+                                            <span class="browse-dot">·</span>
+                                            <a href="https://www.cartier.com/en-us/jewelry/engagement-rings/" target="_blank" rel="noopener">Cartier</a>
+                                            <span class="browse-dot">·</span>
+                                            <a href="https://www.harrywinston.com/en/fine-jewelry/engagement-rings" target="_blank" rel="noopener">Harry Winston</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
