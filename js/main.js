@@ -676,6 +676,12 @@ const app = {
         const textarea = document.getElementById('ringDescription');
         const description = textarea.value.trim();
 
+        // If no description but has uploaded image, start with that image directly
+        if (!description && this.referenceImage?.imageUrl) {
+            this.startWithUploadedImage();
+            return;
+        }
+
         // Validate description
         const validation = FalAPI.validateDescription(description);
         if (!validation.valid) {
