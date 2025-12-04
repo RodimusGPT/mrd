@@ -936,8 +936,8 @@ img {
 /* Tab Bar */
 .guide-tab-bar {
     display: flex;
-    justify-content: center;
-    gap: 0.5rem;
+    justify-content: space-evenly;
+    gap: 0.4rem;
     margin-bottom: var(--spacing-md);
     padding: 0.4rem 0.5rem;
     background: rgba(44, 44, 44, 0.03);
