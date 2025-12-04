@@ -842,16 +842,67 @@ const app = {
             container.innerHTML = '<p class="no-history">This is your first design. Refine it or save it!</p>';
         } else {
             container.innerHTML = `
-                <p class="history-label">Previous versions:</p>
+                <p class="history-label">Previous versions (tap to preview, 💎 to save):</p>
                 <div class="history-thumbnails">
                     ${pastVersions.map((item) => `
-                        <div class="history-thumb" onclick="app.displayPreview('${item.imageUrl}', 'Version ${item.iteration}')">
-                            <img src="${item.imageUrl}" alt="Version ${item.iteration}">
-                            <span>V${item.iteration}</span>
+                        <div class="history-thumb-wrapper">
+                            <div class="history-thumb" onclick="app.displayPreview('${item.imageUrl}', 'Version ${item.iteration}')">
+                                <img src="${item.imageUrl}" alt="Version ${item.iteration}">
+                                <span>V${item.iteration}</span>
+                            </div>
+                            <button class="btn-save-version" onclick="event.stopPropagation(); app.saveVersionToCollection(${item.iteration})" title="Save this version">💎</button>
                         </div>
                     `).join('')}
                 </div>
             `;
+        }
+    },
+
+    /**
+     * Save a specific version from conversation history to collection
+     */
+    async saveVersionToCollection(iteration) {
+        const version = this.conversation.history.find(h => h.iteration === iteration);
+        if (!version) {
+            alert('Version not found.');
+            return;
+        }
+
+        // Check for duplicates
+        const existingRing = this.savedRings.find(r => r.imageUrl === version.imageUrl);
+        if (existingRing) {
+            this.showSaveSuccess('Already in your collection! 💎');
+            if (!this.collectionExpanded) {
+                this.toggleCollection();
+            }
+            return;
+        }
+
+        this.showLoading(true);
+
+        try {
+            const ring = {
+                imageUrl: version.imageUrl,
+                prompt: version.prompt || `Version ${iteration}`,
+                type: version.isUploaded ? 'uploaded' : 'generated'
+            };
+
+            const result = await FirebaseClient.saveToCollection(ring);
+
+            if (result.success) {
+                await this.loadCollection();
+                this.showSaveSuccess(`Version ${iteration} saved! 💎`);
+                if (!this.collectionExpanded) {
+                    this.toggleCollection();
+                }
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Save version failed:', error);
+            alert('Could not save version. Please try again.');
+        } finally {
+            this.showLoading(false);
         }
     },
 
