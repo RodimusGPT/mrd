@@ -45,11 +45,10 @@
         <div class="container">
             <button class="btn-back" onclick="app.showScreen('landingScreen')">← Back</button>
             <h2 class="screen-title">Design Your Dream Ring</h2>
-            <p class="screen-subtitle">Describe what you love, add inspiration if you have it, then watch the magic happen ✨</p>
 
             <!-- Designer Layout: Preview + Form -->
             <div class="designer-layout">
-                <!-- Left Column: Preview + Collection -->
+                <!-- Left Column: Preview -->
                 <div class="preview-column">
                     <!-- Live Preview Panel -->
                     <div class="live-preview-panel">
@@ -61,27 +60,6 @@
                             </div>
                         </div>
                         <div class="preview-caption" id="previewCaption"></div>
-                    </div>
-
-                    <!-- My Collection Section (moved here for better visibility) -->
-                    <div class="my-collection-section" id="myCollectionSection">
-                        <div class="collection-header">
-                            <h3 class="collection-title">💎 My Collection</h3>
-                            <button class="btn-toggle-collection" onclick="app.toggleCollection()" id="toggleCollectionBtn">
-                                <span id="collectionToggleText">Show</span>
-                                <span class="collection-count" id="collectionCount">(0)</span>
-                            </button>
-                        </div>
-
-                        <div class="collection-gallery" id="collectionGallery" style="display: none;">
-                            <div class="collection-grid" id="collectionGrid">
-                                <!-- Rings will be dynamically inserted here -->
-                            </div>
-                            <div class="collection-empty" id="collectionEmpty">
-                                <span class="empty-icon">💍</span>
-                                <p>No rings saved yet. Generate or import rings and save them to compare!</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -232,6 +210,30 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Collection Button -->
+        <button class="collection-fab" id="collectionFab" onclick="app.openCollectionModal()">
+            💎 <span id="collectionFabCount">0</span>
+        </button>
+
+        <!-- Collection Modal -->
+        <div class="collection-modal" id="collectionModal">
+            <div class="collection-modal-content">
+                <div class="collection-modal-header">
+                    <h3>💎 My Collection</h3>
+                    <button class="btn-close-modal" onclick="app.closeCollectionModal()">✕</button>
+                </div>
+                <div class="collection-modal-body">
+                    <div class="collection-grid" id="collectionGrid">
+                        <!-- Rings will be dynamically inserted here -->
+                    </div>
+                    <div class="collection-empty" id="collectionEmpty">
+                        <span class="empty-icon">💍</span>
+                        <p>No rings saved yet</p>
                     </div>
                 </div>
             </div>

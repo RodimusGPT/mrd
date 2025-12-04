@@ -849,9 +849,7 @@ const app = {
         const existingRing = this.savedRings.find(r => r.imageUrl === version.imageUrl);
         if (existingRing) {
             this.showSaveSuccess('Already in your collection! 💎');
-            if (!this.collectionExpanded) {
-                this.toggleCollection();
-            }
+            this.openCollectionModal();
             return;
         }
 
@@ -869,9 +867,7 @@ const app = {
             if (result.success) {
                 await this.loadCollection();
                 this.showSaveSuccess(`Version ${iteration} saved! 💎`);
-                if (!this.collectionExpanded) {
-                    this.toggleCollection();
-                }
+                this.openCollectionModal();
             } else {
                 throw new Error(result.error);
             }
@@ -1055,6 +1051,28 @@ const app = {
     collectionExpanded: false,
 
     /**
+     * Open the collection modal
+     */
+    openCollectionModal() {
+        const modal = document.getElementById('collectionModal');
+        if (modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        }
+    },
+
+    /**
+     * Close the collection modal
+     */
+    closeCollectionModal() {
+        const modal = document.getElementById('collectionModal');
+        if (modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = ''; // Restore scroll
+        }
+    },
+
+    /**
      * Load saved collection from Firebase on init
      */
     async loadCollection() {
@@ -1099,10 +1117,8 @@ const app = {
         const existingRing = this.savedRings.find(r => r.imageUrl === this.currentDesign.imageUrl);
         if (existingRing) {
             this.showSaveSuccess('Already in your collection! 💎');
-            // Expand collection to show it
-            if (!this.collectionExpanded) {
-                this.toggleCollection();
-            }
+            // Open modal to show collection
+            this.openCollectionModal();
             return;
         }
 
@@ -1124,10 +1140,8 @@ const app = {
                 // Show success feedback
                 this.showSaveSuccess('Ring saved to collection!');
 
-                // Expand collection to show the new ring
-                if (!this.collectionExpanded) {
-                    this.toggleCollection();
-                }
+                // Open modal to show the new ring
+                this.openCollectionModal();
             } else {
                 throw new Error(result.error);
             }
@@ -1165,9 +1179,15 @@ const app = {
         const grid = document.getElementById('collectionGrid');
         const empty = document.getElementById('collectionEmpty');
         const count = document.getElementById('collectionCount');
+        const fabCount = document.getElementById('collectionFabCount');
 
         if (count) {
             count.textContent = `(${this.savedRings.length})`;
+        }
+
+        // Update FAB count
+        if (fabCount) {
+            fabCount.textContent = this.savedRings.length;
         }
 
         if (!grid) return;
