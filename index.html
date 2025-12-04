@@ -47,16 +47,40 @@
 
             <!-- Designer Layout: Preview + Form -->
             <div class="designer-layout">
-                <!-- Live Preview Panel -->
-                <div class="live-preview-panel">
-                    <div class="preview-ring-image" id="livePreviewContainer">
-                        <img id="livePreviewImage" src="" alt="Ring preview">
-                        <div class="preview-placeholder" id="previewPlaceholder">
-                            <span class="placeholder-icon">💍</span>
-                            <p>Your ring preview will appear here</p>
+                <!-- Left Column: Preview + Collection -->
+                <div class="preview-column">
+                    <!-- Live Preview Panel -->
+                    <div class="live-preview-panel">
+                        <div class="preview-ring-image" id="livePreviewContainer">
+                            <img id="livePreviewImage" src="" alt="Ring preview">
+                            <div class="preview-placeholder" id="previewPlaceholder">
+                                <span class="placeholder-icon">💍</span>
+                                <p>Your ring preview will appear here</p>
+                            </div>
+                        </div>
+                        <div class="preview-caption" id="previewCaption"></div>
+                    </div>
+
+                    <!-- My Collection Section (moved here for better visibility) -->
+                    <div class="my-collection-section" id="myCollectionSection">
+                        <div class="collection-header">
+                            <h3 class="collection-title">💎 My Collection</h3>
+                            <button class="btn-toggle-collection" onclick="app.toggleCollection()" id="toggleCollectionBtn">
+                                <span id="collectionToggleText">Show</span>
+                                <span class="collection-count" id="collectionCount">(0)</span>
+                            </button>
+                        </div>
+
+                        <div class="collection-gallery" id="collectionGallery" style="display: none;">
+                            <div class="collection-grid" id="collectionGrid">
+                                <!-- Rings will be dynamically inserted here -->
+                            </div>
+                            <div class="collection-empty" id="collectionEmpty">
+                                <span class="empty-icon">💍</span>
+                                <p>No rings saved yet. Generate or import rings and save them to compare!</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="preview-caption" id="previewCaption"></div>
                 </div>
 
                 <!-- Unified Design Form Panel -->
@@ -236,27 +260,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- My Collection Section -->
-            <div class="my-collection-section" id="myCollectionSection">
-                <div class="collection-header">
-                    <h3 class="collection-title">💎 My Collection</h3>
-                    <button class="btn-toggle-collection" onclick="app.toggleCollection()" id="toggleCollectionBtn">
-                        <span id="collectionToggleText">Show</span>
-                        <span class="collection-count" id="collectionCount">(0)</span>
-                    </button>
-                </div>
-
-                <div class="collection-gallery" id="collectionGallery" style="display: none;">
-                    <div class="collection-grid" id="collectionGrid">
-                        <!-- Rings will be dynamically inserted here -->
-                    </div>
-                    <div class="collection-empty" id="collectionEmpty">
-                        <span class="empty-icon">💍</span>
-                        <p>No rings saved yet. Generate or import rings and save them to compare!</p>
                     </div>
                 </div>
             </div>
