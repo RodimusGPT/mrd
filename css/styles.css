@@ -1138,7 +1138,7 @@ img {
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.55rem 0.75rem;
+    padding: 0.55rem 0.85rem;
     border: 2px solid transparent;
     border-radius: var(--radius-sm);
     background: transparent;
@@ -1149,9 +1149,8 @@ img {
     cursor: pointer;
     transition: all 0.25s ease;
     white-space: nowrap;
-    flex: 1;
+    flex: 0 0 auto;
     justify-content: center;
-    min-width: 0;
     position: relative;
 }
 
@@ -1171,9 +1170,7 @@ img {
 }
 
 .tab-label {
-    flex-shrink: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    flex-shrink: 0;
 }
 
 /* Tab Badge */
