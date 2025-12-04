@@ -155,7 +155,12 @@
                                     <!-- Reference Preview (shown when image added) -->
                                     <div class="inline-reference-preview" id="referencePreview" style="display: none;">
                                         <img id="referenceImage" src="" alt="Reference ring">
-                                        <span class="reference-label">Inspiration added</span>
+                                        <div class="reference-actions">
+                                            <button class="btn-start-with-image" onclick="app.startWithUploadedImage()">
+                                                Start with this exact ring ✨
+                                            </button>
+                                            <span class="reference-or">or add description above</span>
+                                        </div>
                                         <button class="btn-remove-inline" onclick="app.clearReference()">×</button>
                                     </div>
 

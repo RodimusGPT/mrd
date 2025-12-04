@@ -353,6 +353,50 @@ const app = {
     },
 
     /**
+     * Start with the uploaded image directly (skip AI generation)
+     * Goes straight to conversation mode for refinement
+     */
+    startWithUploadedImage() {
+        if (!this.referenceImage || !this.referenceImage.imageUrl) {
+            alert('Please upload an image first.');
+            return;
+        }
+
+        const imageUrl = this.referenceImage.imageUrl;
+
+        // Reset conversation and use uploaded image as starting point
+        this.conversation.history = [];
+        this.conversation.iteration = 1;
+        this.conversation.currentImage = imageUrl;
+
+        // Add to conversation history with marker that it's an uploaded image
+        this.conversation.history.push({
+            prompt: '[Uploaded image]',
+            imageUrl: imageUrl,
+            iteration: 1,
+            isUploaded: true
+        });
+
+        // Store as current design
+        this.currentDesign = {
+            type: 'uploaded',
+            imageUrl: imageUrl,
+            description: 'Starting from uploaded inspiration',
+            prompt: 'Uploaded reference image',
+            title: 'Your Inspiration',
+            conversationHistory: [...this.conversation.history]
+        };
+
+        console.log('💎 Starting with uploaded image');
+
+        // Switch to conversation mode
+        this.showConversationMode();
+
+        // Display the image in the preview
+        this.displayPreview(imageUrl, 'Your starting design');
+    },
+
+    /**
      * Insert term into active input field AND show live preview
      * Toggles selection state - click again to remove
      * Mutual exclusivity: Diamond/Setting/Metal allow only ONE selection each
@@ -1019,13 +1063,24 @@ const app = {
             return;
         }
 
+        // Check if this ring is already in the collection (prevent duplicates)
+        const existingRing = this.savedRings.find(r => r.imageUrl === this.currentDesign.imageUrl);
+        if (existingRing) {
+            this.showSaveSuccess('Already in your collection! 💎');
+            // Expand collection to show it
+            if (!this.collectionExpanded) {
+                this.toggleCollection();
+            }
+            return;
+        }
+
         this.showLoading(true);
 
         try {
             const ring = {
                 imageUrl: this.currentDesign.imageUrl,
                 prompt: this.currentDesign.description || '',
-                type: 'generated'
+                type: this.currentDesign.type || 'generated'
             };
 
             const result = await FirebaseClient.saveToCollection(ring);

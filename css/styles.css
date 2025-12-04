@@ -3303,11 +3303,36 @@ img {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.inline-reference-preview .reference-label {
+.inline-reference-preview .reference-actions {
     flex: 1;
-    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.btn-start-with-image {
+    background: linear-gradient(135deg, var(--turquoise), var(--palm-green));
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--palm-green);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 206, 209, 0.3);
+}
+
+.btn-start-with-image:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 206, 209, 0.4);
+}
+
+.reference-or {
+    font-size: 0.7rem;
+    color: rgba(44, 44, 44, 0.5);
+    text-align: center;
 }
 
 .btn-remove-inline {
