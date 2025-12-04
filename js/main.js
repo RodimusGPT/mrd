@@ -640,7 +640,7 @@ const app = {
     },
 
     /**
-     * Switch between landing page versions (A/B comparison)
+     * Switch between landing page versions (A/B/C comparison)
      */
     switchLandingVersion(version) {
         // Update version buttons
@@ -652,13 +652,22 @@ const app = {
         // Update version containers
         const versionA = document.getElementById('landingVersionA');
         const versionB = document.getElementById('landingVersionB');
+        const versionC = document.getElementById('landingVersionC');
 
+        // Hide all versions first
+        versionA?.classList.remove('active');
+        versionB?.classList.remove('active');
+        versionC?.classList.remove('active');
+
+        // Show selected version
         if (version === 'a') {
             versionA?.classList.add('active');
-            versionB?.classList.remove('active');
-        } else {
-            versionA?.classList.remove('active');
+        } else if (version === 'b') {
             versionB?.classList.add('active');
+        } else if (version === 'c') {
+            versionC?.classList.add('active');
+            // Generate AI background if not already loaded
+            this.generateLandingBg();
         }
 
         // Save preference to localStorage
@@ -674,6 +683,97 @@ const app = {
         if (savedVersion) {
             this.switchLandingVersion(savedVersion);
         }
+    },
+
+    /**
+     * Generate AI Lilly Pulitzer-style background for Version C
+     */
+    async generateLandingBg() {
+        const bgContainer = document.getElementById('aiArtBg');
+        const loadingEl = document.getElementById('aiArtLoading');
+
+        if (!bgContainer) return;
+
+        // Check if already loaded
+        if (bgContainer.classList.contains('loaded')) {
+            return;
+        }
+
+        // Check localStorage cache first
+        const cachedBg = localStorage.getItem('landing_bg_url');
+        const cachedExpiry = localStorage.getItem('landing_bg_expiry');
+
+        if (cachedBg && cachedExpiry && Date.now() < parseInt(cachedExpiry)) {
+            console.log('🎨 Using cached landing background');
+            bgContainer.style.backgroundImage = `url(${cachedBg})`;
+            bgContainer.classList.add('loaded');
+            if (loadingEl) loadingEl.style.display = 'none';
+            return;
+        }
+
+        // Show loading state
+        if (loadingEl) loadingEl.style.display = 'flex';
+
+        try {
+            const apiUrl = CONFIG.API_URL;
+            if (!apiUrl || apiUrl === 'YOUR_RENDER_URL') {
+                throw new Error('API not configured');
+            }
+
+            // Lilly Pulitzer inspired prompt for tropical pattern background
+            const prompt = `Seamless tropical pattern in Lilly Pulitzer style, vibrant hot pink, coral, turquoise and palm green colors, featuring palm fronds, hibiscus flowers, monstera leaves, and tropical birds, preppy resort aesthetic, hand-painted watercolor style, bright and cheerful, fashion textile design, high resolution seamless pattern`;
+
+            console.log('🎨 Generating Lilly Pulitzer background...');
+
+            const response = await fetch(`${apiUrl}/api/generate-ring`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success && result.imageUrl) {
+                // Apply background
+                bgContainer.style.backgroundImage = `url(${result.imageUrl})`;
+                bgContainer.classList.add('loaded');
+
+                // Cache for 24 hours
+                localStorage.setItem('landing_bg_url', result.imageUrl);
+                localStorage.setItem('landing_bg_expiry', (Date.now() + 24 * 60 * 60 * 1000).toString());
+
+                console.log('🌺 Landing background generated!');
+            } else {
+                throw new Error(result.error || 'No image generated');
+            }
+
+        } catch (error) {
+            console.error('Landing background generation failed:', error);
+            // Fallback to gradient
+            bgContainer.style.background = 'linear-gradient(135deg, #ff6b9d 0%, #ffa3b8 25%, #87ceeb 50%, #40e0d0 75%, #98fb98 100%)';
+            bgContainer.classList.add('loaded');
+        } finally {
+            if (loadingEl) loadingEl.style.display = 'none';
+        }
+    },
+
+    /**
+     * Regenerate landing background with new AI art
+     */
+    async regenerateLandingBg() {
+        const bgContainer = document.getElementById('aiArtBg');
+
+        // Clear cache and loaded state
+        localStorage.removeItem('landing_bg_url');
+        localStorage.removeItem('landing_bg_expiry');
+        bgContainer?.classList.remove('loaded');
+
+        // Generate new background
+        await this.generateLandingBg();
     },
 
     /**

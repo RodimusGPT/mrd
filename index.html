@@ -32,6 +32,9 @@
             <button class="version-btn" data-version="b" onclick="app.switchLandingVersion('b')">
                 <span class="version-icon">🌴</span> Resort
             </button>
+            <button class="version-btn" data-version="c" onclick="app.switchLandingVersion('c')">
+                <span class="version-icon">🎨</span> AI Art
+            </button>
         </div>
 
         <!-- Version A: Classic (Current) -->
@@ -93,6 +96,38 @@
                         <span>🌸</span>
                         <span>🌊</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Version C: AI Art (Generated Lilly Pulitzer Background) -->
+        <div class="landing-version landing-version-c" id="landingVersionC">
+            <div class="ai-art-bg" id="aiArtBg">
+                <!-- AI-generated background will be set here -->
+                <div class="ai-art-loading" id="aiArtLoading">
+                    <div class="ai-art-spinner"></div>
+                    <p>Creating your tropical paradise...</p>
+                </div>
+            </div>
+            <div class="ai-art-overlay"></div>
+            <div class="ai-art-content">
+                <div class="ai-art-card">
+                    <h1 class="ai-art-title">Maria</h1>
+                    <p class="ai-art-tagline">Design Your Forever Ring</p>
+                    <div class="ai-art-separator">
+                        <span>✦</span>
+                        <span>💍</span>
+                        <span>✦</span>
+                    </div>
+                    <p class="ai-art-description">
+                        Create something as unique and beautiful as our love.
+                    </p>
+                    <button class="btn btn-ai-art" onclick="app.showScreen('designerScreen')">
+                        Begin Your Journey
+                    </button>
+                    <button class="btn-regenerate" onclick="app.regenerateLandingBg()" title="Generate new background">
+                        🎨 New Art
+                    </button>
                 </div>
             </div>
         </div>
