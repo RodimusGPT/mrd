@@ -8,7 +8,8 @@ const app = {
     conversation: {
         history: [],      // Array of {prompt, imageUrl, iteration}
         currentImage: null,
-        iteration: 0
+        iteration: 0,
+        viewingPastVersion: null  // Track if viewing a past version (iteration number or null)
     },
 
     // Cached AI-generated term previews
@@ -368,6 +369,7 @@ const app = {
         this.conversation.history = [];
         this.conversation.iteration = 1;
         this.conversation.currentImage = imageUrl;
+        this.conversation.viewingPastVersion = null;
 
         // Add to conversation history with marker that it's an uploaded image
         this.conversation.history.push({
@@ -592,6 +594,34 @@ const app = {
             previewContainer.classList.add('preview-updated');
             setTimeout(() => previewContainer.classList.remove('preview-updated'), 300);
         }
+    },
+
+    /**
+     * View a past version from conversation history
+     */
+    viewPastVersion(imageUrl, iteration) {
+        // Mark that we're viewing a past version
+        this.conversation.viewingPastVersion = iteration;
+
+        // Display the past version in the preview
+        this.displayPreview(imageUrl, `Version ${iteration} (viewing)`);
+
+        // Update the conversation display to show "Back to Current" option
+        this.updateConversationDisplay();
+    },
+
+    /**
+     * Return to viewing the current (latest) version
+     */
+    returnToCurrentVersion() {
+        // Clear the viewing past flag
+        this.conversation.viewingPastVersion = null;
+
+        // Display the current version
+        this.displayPreview(this.conversation.currentImage, `Version ${this.conversation.iteration}`);
+
+        // Update conversation display
+        this.updateConversationDisplay();
     },
 
     /**
@@ -827,6 +857,7 @@ const app = {
                 this.conversation.history = [];
                 this.conversation.iteration = 1;
                 this.conversation.currentImage = result.imageUrl;
+                this.conversation.viewingPastVersion = null;
 
                 // Add to conversation history
                 this.conversation.history.push({
@@ -894,6 +925,7 @@ const app = {
                 // Update conversation
                 this.conversation.iteration++;
                 this.conversation.currentImage = result.imageUrl;
+                this.conversation.viewingPastVersion = null; // Reset viewing state
 
                 // Add to history
                 this.conversation.history.push({
@@ -949,25 +981,34 @@ const app = {
     },
 
     /**
-     * Update the conversation display - only show PAST versions as thumbnails
-     * Current version is shown in the main preview panel
+     * Update the conversation display - show past versions and current version indicator
+     * Allows navigation between all versions
      */
     updateConversationDisplay() {
         const container = document.getElementById('conversationHistory');
         if (!container) return;
 
-        // Only show past versions (not the current one)
         const pastVersions = this.conversation.history.slice(0, -1);
+        const currentVersion = this.conversation.history[this.conversation.history.length - 1];
+        const viewingPast = this.conversation.viewingPastVersion !== null;
 
         if (pastVersions.length === 0) {
             container.innerHTML = '<p class="no-history">This is your first design. Refine it or save it!</p>';
         } else {
+            // Build the "Back to Current" button if viewing a past version
+            const backToCurrentBtn = viewingPast ? `
+                <button class="btn btn-back-to-current" onclick="app.returnToCurrentVersion()">
+                    ← Back to V${this.conversation.iteration} (Current)
+                </button>
+            ` : '';
+
             container.innerHTML = `
+                ${backToCurrentBtn}
                 <p class="history-label">Previous versions (tap to preview, 💎 to save):</p>
                 <div class="history-thumbnails">
                     ${pastVersions.map((item) => `
-                        <div class="history-thumb-wrapper">
-                            <div class="history-thumb" onclick="app.displayPreview('${item.imageUrl}', 'Version ${item.iteration}')">
+                        <div class="history-thumb-wrapper ${this.conversation.viewingPastVersion === item.iteration ? 'viewing' : ''}">
+                            <div class="history-thumb" onclick="app.viewPastVersion('${item.imageUrl}', ${item.iteration})">
                                 <img src="${item.imageUrl}" alt="Version ${item.iteration}">
                                 <span>V${item.iteration}</span>
                             </div>
@@ -1042,6 +1083,7 @@ const app = {
         this.conversation.history = [];
         this.conversation.currentImage = null;
         this.conversation.iteration = 0;
+        this.conversation.viewingPastVersion = null;
         this.currentDesign = null;
         this.referenceImage = null;
 
