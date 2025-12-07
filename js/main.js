@@ -49,8 +49,33 @@ const app = {
         // Check if there's a saved design
         this.checkSavedDesign();
 
+        // Setup lightbox for preview images
+        this.setupLightbox();
+
         // Show landing screen
         this.showScreen('landingScreen');
+    },
+
+    /**
+     * Setup lightbox click handlers
+     */
+    setupLightbox() {
+        // Main preview image
+        const previewImage = document.getElementById('livePreviewImage');
+        if (previewImage) {
+            previewImage.addEventListener('click', () => {
+                if (previewImage.src && previewImage.style.display !== 'none') {
+                    this.openLightbox(previewImage.src);
+                }
+            });
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeLightbox();
+            }
+        });
     },
 
     /**
@@ -635,6 +660,30 @@ const app = {
                 <p>Couldn't load ${term} preview</p>
             `;
             previewPlaceholder.style.display = 'block';
+        }
+    },
+
+    /**
+     * Open lightbox with full-size image
+     */
+    openLightbox(imageUrl) {
+        const lightbox = document.getElementById('imageLightbox');
+        const lightboxImg = document.getElementById('lightboxImage');
+        if (lightbox && lightboxImg && imageUrl) {
+            lightboxImg.src = imageUrl;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+    },
+
+    /**
+     * Close the lightbox
+     */
+    closeLightbox() {
+        const lightbox = document.getElementById('imageLightbox');
+        if (lightbox) {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
         }
     },
 
@@ -1391,8 +1440,8 @@ const app = {
         grid.innerHTML = this.savedRings.map(ring => `
             <div class="collection-card ${ring.isTheOne ? 'is-the-one' : ''}" data-ring-id="${ring.id}">
                 <div class="collection-card-image">
-                    <button class="btn-delete-overlay" onclick="app.removeFromCollection('${ring.id}')" title="Remove">🗑️</button>
-                    <img src="${ring.imageUrl}" alt="Saved ring" loading="lazy">
+                    <button class="btn-delete-overlay" onclick="event.stopPropagation(); app.removeFromCollection('${ring.id}')" title="Remove">🗑️</button>
+                    <img src="${ring.imageUrl}" alt="Saved ring" loading="lazy" onclick="app.openLightbox('${ring.imageUrl}')">
                     ${ring.isTheOne ? '<div class="the-one-badge">💕 The One</div>' : ''}
                 </div>
                 <div class="collection-card-info">
@@ -1405,8 +1454,8 @@ const app = {
                             💕 This Is The One!
                         </button>
                     ` : `
-                        <button class="btn-the-one selected" disabled>
-                            💕 The One
+                        <button class="btn-the-one selected" onclick="app.unmarkAsTheOne('${ring.id}')" title="Tap to unmark">
+                            💕 The One ✓
                         </button>
                     `}
                 </div>
@@ -1422,9 +1471,7 @@ const app = {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
             month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit'
+            day: 'numeric'
         });
     },
 
@@ -1447,6 +1494,30 @@ const app = {
         } catch (error) {
             console.error('Mark as The One failed:', error);
             alert('Could not mark ring. Please try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    /**
+     * Unmark a ring as "The One"
+     */
+    async unmarkAsTheOne(ringId) {
+        this.showLoading(true);
+
+        try {
+            const result = await FirebaseClient.unmarkAsTheOne(ringId);
+
+            if (result.success) {
+                // Refresh collection to show updated state
+                await this.loadCollection();
+                this.showSaveSuccess('Unmarked');
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Unmark failed:', error);
+            alert('Could not unmark ring. Please try again.');
         } finally {
             this.showLoading(false);
         }

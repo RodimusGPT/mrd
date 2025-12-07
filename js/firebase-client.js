@@ -376,6 +376,49 @@ const FirebaseClient = {
     },
 
     /**
+     * Unmark a ring as "The One"
+     */
+    async unmarkAsTheOne(ringId) {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured' };
+        }
+
+        try {
+            const collection = await this.getCollection();
+            const targetRing = collection.data?.find(r => r.id === ringId);
+            if (!targetRing) {
+                throw new Error('Ring not found');
+            }
+
+            const response = await fetch(`${this.baseUrl}/ring_collection/${ringId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fields: {
+                        id: { stringValue: targetRing.id },
+                        image_url: { stringValue: targetRing.imageUrl },
+                        prompt: { stringValue: targetRing.prompt },
+                        type: { stringValue: targetRing.type },
+                        is_the_one: { booleanValue: false },
+                        created_at: { timestampValue: targetRing.createdAt }
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Firebase error: ${response.status}`);
+            }
+
+            console.log('Unmarked as The One:', ringId);
+            return { success: true };
+
+        } catch (error) {
+            console.error('Firebase unmark error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    /**
      * Get the ring marked as "The One"
      */
     async getTheOne() {
