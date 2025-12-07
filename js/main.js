@@ -463,7 +463,11 @@ const app = {
                 activeField.value = currentValue + separator + term.toLowerCase();
             }
 
-            activeField.focus();
+            // Only focus on non-touch devices to prevent mobile keyboard popup
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            if (!isTouchDevice) {
+                activeField.focus();
+            }
         }
 
         // Toggle selected state on clicked chip
