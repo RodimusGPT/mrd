@@ -1044,7 +1044,7 @@ const app = {
         const viewingPast = this.conversation.viewingPastVersion !== null;
 
         if (pastVersions.length === 0) {
-            container.innerHTML = '<p class="no-history">This is your first design. Refine it or save it!</p>';
+            container.innerHTML = '';
         } else {
             // Build the "Back to Current" button if viewing a past version
             const backToCurrentBtn = viewingPast ? `
