@@ -65,33 +65,47 @@ app.post('/api/generate-ring', async (req, res) => {
 
     // Build the full prompt with jewelry-specific enhancements
     let fullPrompt;
+    let apiEndpoint;
+    let requestBody;
+
     if (isRefinement && referenceImage) {
-        // For refinements, emphasize the modification while maintaining engagement ring context
-        fullPrompt = `A beautiful diamond engagement ring with these exact specifications: ${prompt}. Professional jewelry photography, elegant white studio background, macro detail shot, luxury presentation, 4K quality, perfect lighting highlighting the diamond brilliance and metal finish`;
-        console.log('🔄 Refining design...');
+        // For refinements, use the EDIT endpoint with image-to-image
+        fullPrompt = `${prompt}. Professional jewelry photography, elegant white studio background, macro detail shot, luxury presentation, perfect lighting highlighting the diamond brilliance and metal finish`;
+        apiEndpoint = 'https://fal.run/fal-ai/nano-banana-pro/edit';
+        requestBody = {
+            prompt: fullPrompt,
+            image_urls: [referenceImage],  // Pass the previous image for editing
+            aspect_ratio: '1:1',
+            resolution: '1K',
+            num_images: 1
+        };
+        console.log('🔄 Refining design with image-to-image...');
     } else {
-        // Initial generation
+        // Initial generation - use base model (text-to-image)
         fullPrompt = `A stunning diamond engagement ring: ${prompt}. Professional jewelry photography, elegant white studio background, macro detail shot, luxury presentation, 4K quality, perfect lighting highlighting the diamond brilliance and metal finish`;
+        apiEndpoint = 'https://fal.run/fal-ai/nano-banana-pro';
+        requestBody = {
+            prompt: fullPrompt,
+            image_size: '1024x1024',
+            num_inference_steps: 28,
+            guidance_scale: 3.5,
+            num_images: 1,
+            enable_safety_checker: true
+        };
         console.log('✨ Creating new design...');
     }
 
     console.log('Prompt:', fullPrompt.substring(0, 120) + '...');
+    console.log('Endpoint:', apiEndpoint);
 
     try {
-        const response = await fetch('https://fal.run/fal-ai/nano-banana-pro', {
+        const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Key ${FAL_API_KEY}`
             },
-            body: JSON.stringify({
-                prompt: fullPrompt,
-                image_size: '1024x1024',
-                num_inference_steps: 28,
-                guidance_scale: 3.5,
-                num_images: 1,
-                enable_safety_checker: true
-            })
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
