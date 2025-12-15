@@ -430,5 +430,69 @@ const FirebaseClient = {
             }
         }
         return { success: false, error: 'No ring marked as The One' };
+    },
+
+    /**
+     * Clear all rings from the collection
+     * @param {function} onProgress - Optional callback for progress updates (deleted, total)
+     * @returns {Promise<{success: boolean, deleted: number, error?: string}>}
+     */
+    async clearAllRings(onProgress = null) {
+        if (!this.isConfigured()) {
+            return { success: false, deleted: 0, error: 'Firebase not configured' };
+        }
+
+        try {
+            // Get all rings first
+            const collection = await this.getCollection();
+            if (!collection.success) {
+                throw new Error(collection.error || 'Failed to fetch collection');
+            }
+
+            const rings = collection.data;
+            if (rings.length === 0) {
+                return { success: true, deleted: 0 };
+            }
+
+            let deleted = 0;
+            const errors = [];
+
+            // Delete each ring
+            for (const ring of rings) {
+                try {
+                    const response = await fetch(`${this.baseUrl}/ring_collection/${ring.id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok || response.status === 404) {
+                        deleted++;
+                        if (onProgress) {
+                            onProgress(deleted, rings.length);
+                        }
+                    } else {
+                        errors.push(`Failed to delete ${ring.id}: ${response.status}`);
+                    }
+                } catch (err) {
+                    errors.push(`Error deleting ${ring.id}: ${err.message}`);
+                }
+            }
+
+            console.log(`🗑️ Cleared ${deleted}/${rings.length} rings from collection`);
+
+            if (errors.length > 0) {
+                console.warn('Some deletions failed:', errors);
+            }
+
+            return {
+                success: deleted > 0,
+                deleted,
+                total: rings.length,
+                errors: errors.length > 0 ? errors : undefined
+            };
+
+        } catch (error) {
+            console.error('Firebase clear all error:', error);
+            return { success: false, deleted: 0, error: error.message };
+        }
     }
 };

@@ -253,7 +253,10 @@
             <div class="collection-modal-content">
                 <div class="collection-modal-header">
                     <h3>💎 My Collection</h3>
-                    <button class="btn-close-modal" onclick="app.closeCollectionModal()">✕</button>
+                    <div class="collection-header-actions">
+                        <button class="btn-clear-all" onclick="app.showClearAllConfirm()" title="Clear all rings">🗑️ Clear All</button>
+                        <button class="btn-close-modal" onclick="app.closeCollectionModal()">✕</button>
+                    </div>
                 </div>
                 <div class="collection-modal-body">
                     <div class="collection-grid" id="collectionGrid">
@@ -264,6 +267,25 @@
                         <p>No rings saved yet</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Clear All Confirmation Modal -->
+        <div class="confirm-modal" id="clearAllModal">
+            <div class="confirm-modal-content">
+                <div class="confirm-modal-icon">⚠️</div>
+                <h3>Clear All Rings?</h3>
+                <p>This will permanently delete <strong id="clearAllCount">0</strong> ring(s) from your collection.</p>
+                <p class="confirm-warning">This action cannot be undone.</p>
+                <div class="confirm-input-group">
+                    <label for="clearAllInput">Type <strong>CLEAR</strong> to confirm:</label>
+                    <input type="text" id="clearAllInput" oninput="app.validateClearAllInput()" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="confirm-modal-actions">
+                    <button class="btn-cancel" onclick="app.hideClearAllConfirm()">Cancel</button>
+                    <button class="btn-danger" id="clearAllConfirmBtn" onclick="app.clearAllRings()" disabled>Clear All</button>
+                </div>
+                <div id="clearAllProgress" class="clear-progress" style="display: none;"></div>
             </div>
         </div>
     </section>
