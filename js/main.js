@@ -1092,9 +1092,22 @@ const app = {
         this.showLoading(true);
 
         try {
+            // Get prompts up to this iteration for title generation
+            const promptsUpToIteration = this.conversation.history
+                .filter(h => h.iteration <= iteration)
+                .map(h => h.prompt)
+                .filter(p => p && p !== '[Uploaded image]');
+
+            let title = '';
+            if (promptsUpToIteration.length > 0) {
+                const titleResult = await FalAPI.generateRingTitle(promptsUpToIteration);
+                title = titleResult.title || '';
+            }
+
             const ring = {
                 imageUrl: version.imageUrl,
                 prompt: version.prompt || `Version ${iteration}`,
+                title: title,  // Add generated title
                 type: version.isUploaded ? 'uploaded' : 'generated'
             };
 
@@ -1364,9 +1377,19 @@ const app = {
         this.showLoading(true);
 
         try {
+            // Generate a descriptive title from prompt history
+            const prompts = this.conversation.history.map(h => h.prompt).filter(p => p && p !== '[Uploaded image]');
+            let title = '';
+
+            if (prompts.length > 0) {
+                const titleResult = await FalAPI.generateRingTitle(prompts);
+                title = titleResult.title || '';
+            }
+
             const ring = {
                 imageUrl: this.currentDesign.imageUrl,
                 prompt: this.currentDesign.description || '',
+                title: title,  // Add generated title
                 type: this.currentDesign.type || 'generated'
             };
 
@@ -1445,9 +1468,10 @@ const app = {
             <div class="collection-card ${ring.isTheOne ? 'is-the-one' : ''}" data-ring-id="${ring.id}">
                 <div class="collection-card-image">
                     <button class="btn-delete-overlay" onclick="event.stopPropagation(); app.removeFromCollection('${ring.id}')" title="Remove">🗑️</button>
-                    <img src="${ring.imageUrl}" alt="Saved ring" loading="lazy" onclick="app.openLightbox('${ring.imageUrl}')">
+                    <img src="${ring.imageUrl}" alt="${ring.title || 'Saved ring'}" loading="lazy" onclick="app.openLightbox('${ring.imageUrl}')">
                     ${ring.isTheOne ? '<div class="the-one-badge">💕 The One</div>' : ''}
                 </div>
+                ${ring.title ? `<div class="collection-card-title">${ring.title}</div>` : ''}
                 <div class="collection-card-info">
                     <span class="ring-type ${ring.type}">${ring.type === 'imported' ? '🔗 Imported' : '✨ Generated'}</span>
                     <span class="ring-date">${this.formatDate(ring.createdAt)}</span>

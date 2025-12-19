@@ -4073,6 +4073,17 @@ img {
     z-index: 1;
 }
 
+.collection-card-title {
+    padding: 0.5rem 0.75rem 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-align: center;
+    line-height: 1.3;
+    background: var(--soft-pink);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
 .collection-card-info {
     display: flex;
     flex-direction: column;

@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3001;
 
 // Environment variables (set these in Render dashboard)
 const FAL_API_KEY = process.env.FAL_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || process.env.ALLOWED_ORIGIN || '')
     .split(',')
     .map(o => o.trim())
@@ -41,7 +42,14 @@ app.use(cors({
 
 // Health check endpoint
 app.get('/', (req, res) => {
-    res.json({ status: 'ok', message: 'Ring Designer API is running 💍' });
+    res.json({
+        status: 'ok',
+        message: 'Ring Designer API is running 💍',
+        services: {
+            fal: !!FAL_API_KEY,
+            openrouter: !!OPENROUTER_API_KEY
+        }
+    });
 });
 
 // Generate ring image endpoint
@@ -131,6 +139,89 @@ app.post('/api/generate-ring', async (req, res) => {
     } catch (error) {
         console.error('Generation error:', error);
         return res.status(500).json({ error: 'Failed to generate ring image' });
+    }
+});
+
+// =============================================
+// GENERATE RING TITLE ENDPOINT
+// Uses OpenRouter LLM to create descriptive ring titles from prompt history
+// =============================================
+
+app.post('/api/generate-ring-title', async (req, res) => {
+    const { prompts } = req.body;
+
+    // Validate input
+    if (!prompts || !Array.isArray(prompts) || prompts.length === 0) {
+        return res.status(400).json({ error: 'Prompts array is required' });
+    }
+
+    // If no OpenRouter key, generate a simple fallback title
+    if (!OPENROUTER_API_KEY) {
+        console.warn('OPENROUTER_API_KEY not configured, using fallback title');
+        const fallbackTitle = prompts[0].substring(0, 40) + (prompts[0].length > 40 ? '...' : '');
+        return res.json({
+            success: true,
+            title: fallbackTitle,
+            fallback: true
+        });
+    }
+
+    // Build the prompt for the LLM
+    const promptHistory = prompts.map((p, i) =>
+        i === 0 ? `Initial: ${p}` : `Refinement ${i}: ${p}`
+    ).join('\n');
+
+    const systemPrompt = `You are a jewelry expert. Given a ring design history, create a short, elegant title (max 6 words) that describes the final ring. Focus on: metal type, diamond shape, setting style, and key features. Examples: "Rose Gold Oval Halo", "Platinum Princess Solitaire", "Vintage Yellow Gold Cushion Pavé". Return ONLY the title, nothing else.`;
+
+    try {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                'HTTP-Referer': 'https://ringformaria.love',
+                'X-Title': 'Ring Designer'
+            },
+            body: JSON.stringify({
+                model: 'anthropic/claude-3-haiku',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `Ring design history:\n${promptHistory}\n\nGenerate a title:` }
+                ],
+                max_tokens: 30,
+                temperature: 0.7
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('OpenRouter error:', errorText);
+            // Fallback to first prompt
+            return res.json({
+                success: true,
+                title: prompts[0].substring(0, 40),
+                fallback: true
+            });
+        }
+
+        const result = await response.json();
+        const title = result.choices?.[0]?.message?.content?.trim() || prompts[0].substring(0, 40);
+
+        console.log(`✨ Generated title: "${title}" from ${prompts.length} prompt(s)`);
+
+        return res.json({
+            success: true,
+            title: title
+        });
+
+    } catch (error) {
+        console.error('Title generation error:', error);
+        // Fallback to first prompt
+        return res.json({
+            success: true,
+            title: prompts[0].substring(0, 40),
+            fallback: true
+        });
     }
 });
 
@@ -616,4 +707,5 @@ app.listen(PORT, () => {
     console.log(`💍 Ring Designer API running on port ${PORT}`);
     console.log(`   Allowed origins: ${ALL_ALLOWED_ORIGINS.join(', ')}`);
     console.log(`   FAL_API_KEY: ${FAL_API_KEY ? '✅ configured' : '❌ missing'}`);
+    console.log(`   OPENROUTER_API_KEY: ${OPENROUTER_API_KEY ? '✅ configured' : '⚠️ missing (title generation will use fallback)'}`);
 });

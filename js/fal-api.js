@@ -249,6 +249,54 @@ const FalAPI = {
     },
 
     /**
+     * Generate a descriptive title for a ring based on prompt history
+     * Uses LLM to create an elegant, concise title
+     * @param {string[]} prompts - Array of prompts from conversation history
+     * @returns {Promise<object>} - Generated title
+     */
+    async generateRingTitle(prompts) {
+        const apiUrl = CONFIG.API_URL;
+
+        if (!apiUrl || apiUrl === 'YOUR_RENDER_URL') {
+            // Fallback if no API configured
+            return {
+                success: true,
+                title: prompts[0]?.substring(0, 40) || 'Custom Ring',
+                fallback: true
+            };
+        }
+
+        try {
+            const response = await fetch(`${apiUrl}/api/generate-ring-title`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompts })
+            });
+
+            if (!response.ok) {
+                console.warn('Title generation failed, using fallback');
+                return {
+                    success: true,
+                    title: prompts[0]?.substring(0, 40) || 'Custom Ring',
+                    fallback: true
+                };
+            }
+
+            const result = await response.json();
+            console.log(`✨ Ring title: "${result.title}"`);
+            return result;
+
+        } catch (error) {
+            console.error('Title generation error:', error);
+            return {
+                success: true,
+                title: prompts[0]?.substring(0, 40) || 'Custom Ring',
+                fallback: true
+            };
+        }
+    },
+
+    /**
      * Validate user description before generation
      * @param {string} description - User's ring description
      * @returns {object} - Validation result
