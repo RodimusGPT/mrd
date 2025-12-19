@@ -1089,7 +1089,7 @@ const app = {
             return;
         }
 
-        this.showLoading(true);
+        this.showLoading(true, 'Saving...');
 
         try {
             // Get prompts up to this iteration for title generation
@@ -1285,11 +1285,15 @@ const app = {
     },
 
     /**
-     * Show/hide loading overlay
+     * Show/hide loading overlay with optional custom message
+     * @param {boolean} show - Whether to show or hide
+     * @param {string} message - Optional loading message
      */
-    showLoading(show) {
+    showLoading(show, message = 'Creating your dream ring...') {
         const overlay = document.getElementById('loadingOverlay');
+        const textEl = document.getElementById('loadingText');
         if (show) {
+            if (textEl) textEl.textContent = message;
             overlay.classList.remove('hidden');
         } else {
             overlay.classList.add('hidden');
@@ -1374,7 +1378,7 @@ const app = {
             return;
         }
 
-        this.showLoading(true);
+        this.showLoading(true, 'Saving...');
 
         try {
             // Generate a descriptive title from prompt history
@@ -1477,6 +1481,9 @@ const app = {
                     <span class="ring-date">${this.formatDate(ring.createdAt)}</span>
                 </div>
                 <div class="collection-card-actions">
+                    <button class="btn-refine-saved" onclick="app.startFromSavedRing('${ring.id}')" title="Start designing from this ring">
+                        🔄 Refine This
+                    </button>
                     ${!ring.isTheOne ? `
                         <button class="btn-the-one" onclick="app.markAsTheOne('${ring.id}')" title="Mark as The One">
                             💕 This Is The One!
@@ -1501,6 +1508,62 @@ const app = {
             month: 'short',
             day: 'numeric'
         });
+    },
+
+    /**
+     * Start a new design session from a saved ring
+     * Uses the saved ring as the starting point for refinement
+     */
+    startFromSavedRing(ringId) {
+        const ring = this.savedRings.find(r => r.id === ringId);
+        if (!ring) {
+            alert('Ring not found.');
+            return;
+        }
+
+        // Close the collection modal
+        this.closeCollectionModal();
+
+        // Set up the ring as the starting point
+        this.referenceImage = {
+            imageUrl: ring.imageUrl,
+            source: 'collection'
+        };
+
+        // Reset conversation and use saved ring as starting point
+        this.conversation.history = [];
+        this.conversation.iteration = 1;
+        this.conversation.currentImage = ring.imageUrl;
+        this.conversation.viewingPastVersion = null;
+
+        // Add to conversation history
+        this.conversation.history.push({
+            prompt: ring.title || ring.prompt || '[Saved ring]',
+            imageUrl: ring.imageUrl,
+            iteration: 1,
+            isFromCollection: true
+        });
+
+        // Set as current design
+        this.currentDesign = {
+            imageUrl: ring.imageUrl,
+            description: ring.title || ring.prompt || 'Starting from saved ring',
+            prompt: ring.prompt,
+            title: ring.title || 'Your Saved Design',
+            type: 'generated',
+            conversationHistory: [...this.conversation.history]
+        };
+
+        // Display the ring in the preview
+        this.displayPreview(ring.imageUrl, ring.title || 'Your Saved Design');
+
+        // Switch to conversation mode
+        this.switchToConversationMode();
+
+        // Update conversation display
+        this.updateConversationDisplay();
+
+        console.log('🔄 Starting refinement from saved ring:', ring.title || ring.id);
     },
 
     /**
