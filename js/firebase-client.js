@@ -220,6 +220,7 @@ const FirebaseClient = {
                     id: { stringValue: ringId },
                     image_url: { stringValue: ring.imageUrl || '' },
                     prompt: { stringValue: ring.prompt || '' },
+                    title: { stringValue: ring.title || '' },
                     type: { stringValue: ring.type || 'generated' },
                     is_the_one: { booleanValue: false },
                     created_at: { timestampValue: new Date().toISOString() }
@@ -269,6 +270,7 @@ const FirebaseClient = {
                 id: doc.fields?.id?.stringValue,
                 imageUrl: doc.fields?.image_url?.stringValue,
                 prompt: doc.fields?.prompt?.stringValue,
+                title: doc.fields?.title?.stringValue || '',
                 type: doc.fields?.type?.stringValue,
                 isTheOne: doc.fields?.is_the_one?.booleanValue || false,
                 createdAt: doc.fields?.created_at?.timestampValue
@@ -331,6 +333,7 @@ const FirebaseClient = {
                                     id: { stringValue: ring.id },
                                     image_url: { stringValue: ring.imageUrl },
                                     prompt: { stringValue: ring.prompt },
+                                    title: { stringValue: ring.title || '' },
                                     type: { stringValue: ring.type },
                                     is_the_one: { booleanValue: false },
                                     created_at: { timestampValue: ring.createdAt }
@@ -355,6 +358,7 @@ const FirebaseClient = {
                         id: { stringValue: targetRing.id },
                         image_url: { stringValue: targetRing.imageUrl },
                         prompt: { stringValue: targetRing.prompt },
+                        title: { stringValue: targetRing.title || '' },
                         type: { stringValue: targetRing.type },
                         is_the_one: { booleanValue: true },
                         created_at: { timestampValue: targetRing.createdAt }
@@ -398,6 +402,7 @@ const FirebaseClient = {
                         id: { stringValue: targetRing.id },
                         image_url: { stringValue: targetRing.imageUrl },
                         prompt: { stringValue: targetRing.prompt },
+                        title: { stringValue: targetRing.title || '' },
                         type: { stringValue: targetRing.type },
                         is_the_one: { booleanValue: false },
                         created_at: { timestampValue: targetRing.createdAt }
