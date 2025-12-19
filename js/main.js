@@ -1179,6 +1179,15 @@ const app = {
     },
 
     /**
+     * Begin a fresh design journey from the landing page
+     * Resets all state and shows the designer screen
+     */
+    beginJourney() {
+        this.startOver();
+        this.showScreen('designerScreen');
+    },
+
+    /**
      * Show preview screen with current design
      */
     showPreview() {
