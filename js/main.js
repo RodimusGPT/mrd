@@ -941,6 +941,17 @@ const app = {
     },
 
     /**
+     * Focus the refinement input field
+     */
+    focusRefinement() {
+        const refinementInput = document.getElementById('refinementText');
+        if (refinementInput) {
+            refinementInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => refinementInput.focus(), 300);
+        }
+    },
+
+    /**
      * Refine the current design with additional instructions
      */
     async refineDesign() {
@@ -1387,6 +1398,13 @@ const app = {
             return;
         }
 
+        // Ask for designer name
+        const designerName = prompt('Enter your name (designer):');
+        if (designerName === null) {
+            // User cancelled
+            return;
+        }
+
         this.showLoading(true, 'Saving...');
 
         try {
@@ -1403,7 +1421,8 @@ const app = {
                 imageUrl: this.currentDesign.imageUrl,
                 prompt: this.currentDesign.description || '',
                 title: title,  // Add generated title
-                type: this.currentDesign.type || 'generated'
+                type: this.currentDesign.type || 'generated',
+                designerName: designerName.trim() || 'Anonymous'
             };
 
             const result = await FirebaseClient.saveToCollection(ring);
@@ -1498,6 +1517,7 @@ const app = {
                     ${ring.isTheOne ? '<div class="the-one-badge">💕 The One</div>' : ''}
                 </div>
                 ${ring.title ? `<div class="collection-card-title">${ring.title}</div>` : ''}
+                ${ring.designerName ? `<div class="collection-card-designer">by ${ring.designerName}</div>` : ''}
                 <div class="collection-card-info">
                     <span class="ring-type ${ring.type}">${ring.type === 'imported' ? '🔗 Imported' : '✨ Generated'}</span>
                     <span class="ring-date">${this.formatDate(ring.createdAt)}</span>
