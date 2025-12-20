@@ -222,6 +222,7 @@ const FirebaseClient = {
                     prompt: { stringValue: ring.prompt || '' },
                     title: { stringValue: ring.title || '' },
                     type: { stringValue: ring.type || 'generated' },
+                    designer_name: { stringValue: ring.designerName || 'Anonymous' },
                     is_the_one: { booleanValue: false },
                     created_at: { timestampValue: new Date().toISOString() }
                 }
@@ -272,6 +273,7 @@ const FirebaseClient = {
                 prompt: doc.fields?.prompt?.stringValue,
                 title: doc.fields?.title?.stringValue || '',
                 type: doc.fields?.type?.stringValue,
+                designerName: doc.fields?.designer_name?.stringValue || '',
                 isTheOne: doc.fields?.is_the_one?.booleanValue || false,
                 createdAt: doc.fields?.created_at?.timestampValue
             })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

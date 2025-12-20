@@ -1530,7 +1530,6 @@ const app = {
                 ${ring.title ? `<div class="collection-card-title">${ring.title}</div>` : ''}
                 ${ring.designerName ? `<div class="collection-card-designer">by ${ring.designerName}</div>` : ''}
                 <div class="collection-card-info">
-                    <span class="ring-type ${ring.type}">${ring.type === 'imported' ? '🔗 Imported' : '✨ Generated'}</span>
                     <span class="ring-date">${this.formatDate(ring.createdAt)}</span>
                 </div>
                 <div class="collection-card-actions">
