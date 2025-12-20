@@ -1460,9 +1460,22 @@ const app = {
             count.textContent = `(${this.savedRings.length})`;
         }
 
-        // Update FAB count
+        // Update FAB count with pop animation
         if (fabCount) {
-            fabCount.textContent = this.savedRings.length;
+            const oldCount = parseInt(fabCount.textContent) || 0;
+            const newCount = this.savedRings.length;
+            fabCount.textContent = newCount;
+
+            // Trigger pop animation when count increases
+            if (newCount > oldCount) {
+                const fab = document.getElementById('collectionFab');
+                if (fab) {
+                    fab.classList.remove('pop');
+                    // Force reflow to restart animation
+                    void fab.offsetWidth;
+                    fab.classList.add('pop');
+                }
+            }
         }
 
         if (!grid) return;

@@ -3686,34 +3686,80 @@ img {
 /* Floating Collection Button (FAB) */
 .collection-fab {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
+    bottom: 24px;
+    right: 24px;
+    min-width: 64px;
+    height: 64px;
+    padding: 0 16px;
+    border-radius: 32px;
     background: linear-gradient(135deg, var(--turquoise), var(--palm-green));
     color: white;
-    border: none;
-    font-size: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0, 206, 209, 0.4);
+    box-shadow:
+        0 4px 20px rgba(0, 206, 209, 0.5),
+        0 0 40px rgba(0, 206, 209, 0.3);
     transition: all 0.3s ease;
     z-index: 1000;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 8px;
+    animation: fab-glow 2s ease-in-out infinite;
+}
+
+/* Pulsing glow animation */
+@keyframes fab-glow {
+    0%, 100% {
+        box-shadow:
+            0 4px 20px rgba(0, 206, 209, 0.5),
+            0 0 40px rgba(0, 206, 209, 0.3);
+    }
+    50% {
+        box-shadow:
+            0 4px 24px rgba(0, 206, 209, 0.7),
+            0 0 60px rgba(0, 206, 209, 0.5);
+    }
+}
+
+/* Pop animation when items added */
+@keyframes fab-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.collection-fab.pop {
+    animation: fab-pop 0.3s ease-out;
 }
 
 .collection-fab:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(0, 206, 209, 0.5);
+    transform: scale(1.08);
+    box-shadow:
+        0 6px 28px rgba(0, 206, 209, 0.6),
+        0 0 50px rgba(0, 206, 209, 0.4);
+    animation: none;
 }
 
-.collection-fab span {
-    font-size: 0.7rem;
+.collection-fab .fab-icon {
+    font-size: 1.3rem;
+}
+
+.collection-fab .fab-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.collection-fab .fab-count {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
