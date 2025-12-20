@@ -4130,6 +4130,16 @@ img {
     border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
+.collection-card-designer {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--hot-pink);
+    text-align: center;
+    background: var(--soft-pink);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
 .collection-card-info {
     display: flex;
     flex-direction: column;
@@ -5007,27 +5017,28 @@ img {
     gap: 0.25rem;
 }
 
-.btn-love {
+.btn-refine-action {
     background: linear-gradient(135deg, var(--hot-pink), var(--coral));
     color: white;
     border: none;
     box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3);
 }
 
-.btn-love:hover {
+.btn-refine-action:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(233, 30, 140, 0.4);
 }
 
 .btn-save {
     background: white;
-    color: var(--turquoise);
-    border: 2px solid var(--turquoise);
+    color: var(--charcoal);
+    border: 2px solid var(--light-gray);
 }
 
 .btn-save:hover {
-    background: var(--turquoise);
-    color: white;
+    background: var(--soft-pink);
+    border-color: var(--hot-pink);
+    color: var(--hot-pink);
     transform: translateY(-2px);
 }
 
