@@ -1534,15 +1534,15 @@ const app = {
                 </div>
                 <div class="collection-card-actions">
                     <button class="btn-refine-saved" onclick="app.startFromSavedRing('${ring.id}')" title="Start designing from this ring">
-                        🔄 Refine This
+                        ✨ Refine This
                     </button>
                     ${!ring.isTheOne ? `
-                        <button class="btn-the-one" onclick="app.markAsTheOne('${ring.id}')" title="Mark as The One">
-                            💕 This Is The One!
+                        <button class="btn-the-one" onclick="app.markAsTheOne('${ring.id}')" title="Mark as Favorite">
+                            💕 Mark as Fav
                         </button>
                     ` : `
                         <button class="btn-the-one selected" onclick="app.unmarkAsTheOne('${ring.id}')" title="Tap to unmark">
-                            💕 The One ✓
+                            💕 Fav ✓
                         </button>
                     `}
                 </div>
