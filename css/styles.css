@@ -5015,17 +5015,17 @@ img {
     50% { opacity: 1; }
 }
 
-/* Show hint when image is visible */
-.preview-ring-image:has(img[style*="display: block"]) .preview-expand-hint {
+/* Show hint only when image is visible AND placeholder is hidden */
+.preview-ring-image:has(.preview-placeholder[style*="display: none"]) .preview-expand-hint {
     display: flex;
 }
 
 /* Subtle hover effect on the image container */
-.preview-ring-image:has(img[style*="display: block"]):hover {
+.preview-ring-image:has(.preview-placeholder[style*="display: none"]):hover {
     cursor: zoom-in;
 }
 
-.preview-ring-image:has(img[style*="display: block"]):hover .preview-expand-hint {
+.preview-ring-image:has(.preview-placeholder[style*="display: none"]):hover .preview-expand-hint {
     background: rgba(0, 0, 0, 0.75);
 }
 
