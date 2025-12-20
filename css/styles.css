@@ -4985,6 +4985,60 @@ img {
     cursor: zoom-in;
 }
 
+/* Tap to expand indicator */
+.preview-expand-hint {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+    z-index: 5;
+    animation: hintPulse 2s ease-in-out infinite;
+}
+
+.preview-expand-hint::before {
+    content: "🔍";
+    font-size: 0.85rem;
+}
+
+@keyframes hintPulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* Show hint when image is visible */
+.preview-ring-image:has(img[style*="display: block"]) .preview-expand-hint {
+    display: flex;
+}
+
+/* Subtle hover effect on the image container */
+.preview-ring-image:has(img[style*="display: block"]):hover {
+    cursor: zoom-in;
+}
+
+.preview-ring-image:has(img[style*="display: block"]):hover .preview-expand-hint {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+/* For mobile - ensure hint is always visible when image shows */
+@media (max-width: 768px) {
+    .preview-expand-hint {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+        bottom: 8px;
+        right: 8px;
+    }
+}
+
 /* Collection card images also expandable */
 .collection-card-image img {
     cursor: zoom-in;
@@ -5030,16 +5084,19 @@ img {
 }
 
 .btn-save {
-    background: white;
-    color: var(--charcoal);
-    border: 2px solid var(--light-gray);
+    background: linear-gradient(135deg, rgba(0, 206, 209, 0.1), rgba(0, 206, 209, 0.05));
+    color: var(--turquoise);
+    border: 2px solid var(--turquoise);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 206, 209, 0.2);
 }
 
 .btn-save:hover {
-    background: var(--soft-pink);
-    border-color: var(--hot-pink);
-    color: var(--hot-pink);
+    background: linear-gradient(135deg, var(--turquoise), rgba(0, 206, 209, 0.8));
+    border-color: var(--turquoise);
+    color: white;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 206, 209, 0.3);
 }
 
 @media (max-width: 768px) {
