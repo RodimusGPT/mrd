@@ -4985,38 +4985,46 @@ img {
     cursor: zoom-in;
 }
 
-/* Tap to expand indicator */
-.preview-expand-hint {
+/* Expand button overlay - only shows on generated images */
+.preview-expand-btn {
     position: absolute;
     bottom: 12px;
     right: 12px;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 6px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
     display: none;
     align-items: center;
-    gap: 4px;
-    backdrop-filter: blur(4px);
-    pointer-events: none;
+    justify-content: center;
+    cursor: pointer;
     z-index: 5;
-    animation: hintPulse 2s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
 }
 
-.preview-expand-hint::before {
-    content: "🔍";
-    font-size: 0.85rem;
+.preview-expand-btn svg {
+    color: #333;
+    transition: color 0.2s ease;
 }
 
-@keyframes hintPulse {
-    0%, 100% { opacity: 0.8; }
-    50% { opacity: 1; }
+.preview-expand-btn:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Show hint when image is visible */
-.preview-ring-image:has(img[style*="display: block"]) .preview-expand-hint {
+.preview-expand-btn:hover svg {
+    color: var(--pink-primary, #FF69B4);
+}
+
+.preview-expand-btn:active {
+    transform: scale(1.05);
+}
+
+/* Show expand button only when generated image is visible */
+.preview-ring-image:has(img[style*="display: block"]) .preview-expand-btn {
     display: flex;
 }
 
@@ -5025,17 +5033,18 @@ img {
     cursor: zoom-in;
 }
 
-.preview-ring-image:has(img[style*="display: block"]):hover .preview-expand-hint {
-    background: rgba(0, 0, 0, 0.75);
-}
-
-/* For mobile - ensure hint is always visible when image shows */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-    .preview-expand-hint {
-        padding: 5px 8px;
-        font-size: 0.7rem;
+    .preview-expand-btn {
+        width: 32px;
+        height: 32px;
         bottom: 8px;
         right: 8px;
+    }
+
+    .preview-expand-btn svg {
+        width: 16px;
+        height: 16px;
     }
 }
 

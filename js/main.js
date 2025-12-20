@@ -70,6 +70,17 @@ const app = {
             });
         }
 
+        // Expand button click handler
+        const expandBtn = document.querySelector('.preview-expand-btn');
+        if (expandBtn && previewImage) {
+            expandBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (previewImage.src && previewImage.style.display !== 'none') {
+                    this.openLightbox(previewImage.src);
+                }
+            });
+        }
+
         // Close on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
