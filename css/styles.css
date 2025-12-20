@@ -4172,21 +4172,21 @@ img {
 
 .btn-refine-saved {
     width: 100%;
-    padding: 0.5rem 0.75rem;
-    background: white;
-    color: var(--charcoal);
-    border: 1px solid var(--light-gray);
+    padding: 0.6rem 0.75rem;
+    background: linear-gradient(135deg, var(--turquoise), var(--palm-green));
+    color: white;
+    border: none;
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
+    box-shadow: 0 2px 8px rgba(0, 191, 179, 0.3);
 }
 
 .btn-refine-saved:hover {
-    background: var(--soft-pink);
-    border-color: var(--hot-pink);
-    color: var(--hot-pink);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 191, 179, 0.4);
 }
 
 .btn-the-one {
