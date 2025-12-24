@@ -1754,6 +1754,9 @@ const app = {
         const customDesignName = designNameInput.value.trim();
         const designerName = designerNameInput.value.trim() || 'Anonymous';
 
+        // Store save data locally before hiding modal (which clears pendingSaveData)
+        const saveData = this.pendingSaveData;
+
         this.hideSaveModal();
         this.showLoading(true, 'Saving...');
 
@@ -1761,16 +1764,16 @@ const app = {
             let title = customDesignName;
 
             // If no custom name provided, generate one from prompts
-            if (!title && this.pendingSaveData.prompts && this.pendingSaveData.prompts.length > 0) {
-                const titleResult = await FalAPI.generateRingTitle(this.pendingSaveData.prompts);
+            if (!title && saveData.prompts && saveData.prompts.length > 0) {
+                const titleResult = await FalAPI.generateRingTitle(saveData.prompts);
                 title = titleResult.title || '';
             }
 
             const ring = {
-                imageUrl: this.pendingSaveData.imageUrl,
-                prompt: this.pendingSaveData.prompt || '',
+                imageUrl: saveData.imageUrl,
+                prompt: saveData.prompt || '',
                 title: title,
-                type: this.pendingSaveData.type || 'generated',
+                type: saveData.type || 'generated',
                 designerName: designerName
             };
 
