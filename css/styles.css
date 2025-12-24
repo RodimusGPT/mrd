@@ -5225,20 +5225,20 @@ img {
     box-shadow: 0 6px 16px rgba(233, 30, 140, 0.4);
 }
 
-.btn-save {
-    background: linear-gradient(135deg, var(--turquoise), rgba(0, 206, 209, 0.8));
-    color: white;
-    border: 2px solid var(--turquoise);
+.preview-actions .btn.btn-save {
+    background: linear-gradient(135deg, #00CED1, #00CED1) !important;
+    color: #FFFFFF !important;
+    border: 2px solid #00CED1 !important;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 206, 209, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 206, 209, 0.4);
 }
 
-.btn-save:hover {
-    background: linear-gradient(135deg, rgba(0, 206, 209, 0.9), var(--turquoise));
-    border-color: var(--turquoise);
-    color: white;
+.preview-actions .btn.btn-save:hover {
+    background: linear-gradient(135deg, #00B5B8, #00CED1) !important;
+    border-color: #00CED1 !important;
+    color: #FFFFFF !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 206, 209, 0.4);
+    box-shadow: 0 6px 16px rgba(0, 206, 209, 0.5);
 }
 
 @media (max-width: 768px) {
