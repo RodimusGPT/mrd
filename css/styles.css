@@ -3967,7 +3967,7 @@ img {
 }
 
 .btn-cancel {
-    background: var(--light-gray);
+    background: #e8e8e8;
     border: none;
     color: var(--charcoal);
 }
@@ -4114,18 +4114,19 @@ img {
 }
 
 .btn-save-confirm {
-    background: var(--rose-gold);
+    background: var(--coral);
     border: none;
     color: white;
 }
 
 .btn-save-confirm:hover {
-    background: #c4927a;
+    background: #e85c4f;
     transform: translateY(-1px);
 }
 
 .btn-save-confirm:disabled {
-    background: #e0c4b8;
+    background: #ffc4be;
+    color: #999;
     cursor: not-allowed;
     transform: none;
 }
