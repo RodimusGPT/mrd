@@ -3997,6 +3997,139 @@ img {
     color: var(--gray);
 }
 
+/* Save Design Modal */
+.save-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    padding: var(--spacing-md);
+}
+
+.save-modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.save-modal-content {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.9);
+    transition: transform 0.2s;
+}
+
+.save-modal.open .save-modal-content {
+    transform: scale(1);
+}
+
+.save-modal-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.save-modal-content h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--charcoal);
+    margin: 0 0 var(--spacing-sm);
+}
+
+.save-modal-content p {
+    color: var(--gray);
+    margin: 0 0 var(--spacing-md);
+    font-size: 0.95rem;
+}
+
+.save-input-group {
+    margin-bottom: var(--spacing-md);
+    text-align: left;
+}
+
+.save-input-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: var(--spacing-xs);
+}
+
+.save-input-group .optional-label {
+    font-weight: 400;
+    color: var(--gray);
+    font-size: 0.8rem;
+}
+
+.save-input-group input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--light-gray);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: var(--font-body);
+    transition: var(--transition);
+}
+
+.save-input-group input:focus {
+    outline: none;
+    border-color: var(--rose-gold);
+}
+
+.save-input-group input::placeholder {
+    color: #aaa;
+}
+
+.save-input-group .input-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-top: var(--spacing-xs);
+}
+
+.save-modal-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.save-modal-actions button {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-save-confirm {
+    background: var(--rose-gold);
+    border: none;
+    color: white;
+}
+
+.btn-save-confirm:hover {
+    background: #c4927a;
+    transform: translateY(-1px);
+}
+
+.btn-save-confirm:disabled {
+    background: #e0c4b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .collection-modal-body {
     padding: var(--spacing-md) var(--spacing-lg);
     overflow-y: auto;
