@@ -1,5 +1,8 @@
 // Configuration for the Ring Designer App
 const CONFIG = {
+    // App Version - update this when deploying new versions
+    VERSION: '1.0.1',
+
     // =============================================
     // BACKEND API URL (Render.com)
     // This is where the secure backend runs - API key is stored there

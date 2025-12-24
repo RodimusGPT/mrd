@@ -5252,3 +5252,33 @@ img {
         font-size: 0.9rem;
     }
 }
+
+/* ========================================
+   Version Footer - Subtle deployment indicator
+   ======================================== */
+.version-footer {
+    position: fixed;
+    bottom: 8px;
+    right: 12px;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    color: rgba(150, 150, 150, 0.4);
+    letter-spacing: 0.02em;
+    z-index: 50;
+    pointer-events: none;
+    user-select: none;
+    transition: color 0.3s ease;
+}
+
+.version-footer:hover {
+    color: rgba(150, 150, 150, 0.6);
+}
+
+/* Hide version on very small screens to avoid clutter */
+@media (max-width: 480px) {
+    .version-footer {
+        font-size: 0.6rem;
+        bottom: 4px;
+        right: 8px;
+    }
+}
