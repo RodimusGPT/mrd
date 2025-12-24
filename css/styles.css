@@ -409,7 +409,7 @@ img {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--coral) 50%, var(--flamingo) 100%);
+    background: linear-gradient(90deg, var(--hot-pink) 0%, #F04A87 20%, var(--coral) 50%, #FC7D86 80%, var(--flamingo) 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(233, 30, 140, 0.4);
     border: 3px solid transparent;
