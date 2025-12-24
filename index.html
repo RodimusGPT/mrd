@@ -408,6 +408,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAccess();
 
+            // Set version number from config
+            const versionFooter = document.getElementById('versionFooter');
+            if (versionFooter && typeof CONFIG !== 'undefined' && CONFIG.VERSION) {
+                versionFooter.textContent = 'v' + CONFIG.VERSION;
+            }
+
             const input = document.getElementById('passcodeInput');
             if (input) {
                 input.addEventListener('keydown', (e) => {
@@ -422,6 +428,9 @@
             }
         });
     </script>
+
+    <!-- Version Footer -->
+    <div class="version-footer" id="versionFooter"></div>
 
     <!-- Image Lightbox -->
     <div class="lightbox" id="imageLightbox" onclick="app.closeLightbox()">
