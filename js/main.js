@@ -22,6 +22,9 @@ const app = {
     // Saved ring collection
     savedRings: [],  // Array of {id, imageUrl, prompt, type, timestamp, isTheOne}
 
+    // Pending save data (used when save modal is open)
+    pendingSaveData: null,  // {imageUrl, prompt, type, prompts}
+
     /**
      * Initialize the application
      */
@@ -1111,43 +1114,19 @@ const app = {
             return;
         }
 
-        this.showLoading(true, 'Saving...');
+        // Get prompts up to this iteration for title generation
+        const promptsUpToIteration = this.conversation.history
+            .filter(h => h.iteration <= iteration)
+            .map(h => h.prompt)
+            .filter(p => p && p !== '[Uploaded image]');
 
-        try {
-            // Get prompts up to this iteration for title generation
-            const promptsUpToIteration = this.conversation.history
-                .filter(h => h.iteration <= iteration)
-                .map(h => h.prompt)
-                .filter(p => p && p !== '[Uploaded image]');
-
-            let title = '';
-            if (promptsUpToIteration.length > 0) {
-                const titleResult = await FalAPI.generateRingTitle(promptsUpToIteration);
-                title = titleResult.title || '';
-            }
-
-            const ring = {
-                imageUrl: version.imageUrl,
-                prompt: version.prompt || `Version ${iteration}`,
-                title: title,  // Add generated title
-                type: version.isUploaded ? 'uploaded' : 'generated'
-            };
-
-            const result = await FirebaseClient.saveToCollection(ring);
-
-            if (result.success) {
-                await this.loadCollection();
-                this.showSaveSuccess(`Version ${iteration} saved! 💎`);
-                this.openCollectionModal();
-            } else {
-                throw new Error(result.error);
-            }
-        } catch (error) {
-            console.error('Save version failed:', error);
-            alert('Could not save version. Please try again.');
-        } finally {
-            this.showLoading(false);
-        }
+        // Show save modal for user to enter design name and their name
+        this.showSaveModal({
+            imageUrl: version.imageUrl,
+            prompt: version.prompt || `Version ${iteration}`,
+            type: version.isUploaded ? 'uploaded' : 'generated',
+            prompts: promptsUpToIteration
+        });
     },
 
     /**
@@ -1409,53 +1388,16 @@ const app = {
             return;
         }
 
-        // Ask for designer name
-        const designerName = prompt('Enter your name (designer):');
-        if (designerName === null) {
-            // User cancelled
-            return;
-        }
+        // Collect prompts for potential title generation
+        const prompts = this.conversation.history.map(h => h.prompt).filter(p => p && p !== '[Uploaded image]');
 
-        this.showLoading(true, 'Saving...');
-
-        try {
-            // Generate a descriptive title from prompt history
-            const prompts = this.conversation.history.map(h => h.prompt).filter(p => p && p !== '[Uploaded image]');
-            let title = '';
-
-            if (prompts.length > 0) {
-                const titleResult = await FalAPI.generateRingTitle(prompts);
-                title = titleResult.title || '';
-            }
-
-            const ring = {
-                imageUrl: this.currentDesign.imageUrl,
-                prompt: this.currentDesign.description || '',
-                title: title,  // Add generated title
-                type: this.currentDesign.type || 'generated',
-                designerName: designerName.trim() || 'Anonymous'
-            };
-
-            const result = await FirebaseClient.saveToCollection(ring);
-
-            if (result.success) {
-                // Refresh collection
-                await this.loadCollection();
-
-                // Show success feedback
-                this.showSaveSuccess('Ring saved to collection!');
-
-                // Open modal to show the new ring
-                this.openCollectionModal();
-            } else {
-                throw new Error(result.error);
-            }
-        } catch (error) {
-            console.error('Save to collection failed:', error);
-            alert('Could not save ring. Please try again.');
-        } finally {
-            this.showLoading(false);
-        }
+        // Show save modal for user to enter design name and their name
+        this.showSaveModal({
+            imageUrl: this.currentDesign.imageUrl,
+            prompt: this.currentDesign.description || '',
+            type: this.currentDesign.type || 'generated',
+            prompts: prompts
+        });
     },
 
     /**
@@ -1767,6 +1709,86 @@ const app = {
             if (progressEl) {
                 progressEl.style.display = 'none';
             }
+        }
+    },
+
+    /**
+     * Show the save design modal
+     */
+    showSaveModal(saveData) {
+        this.pendingSaveData = saveData;
+
+        const modal = document.getElementById('saveDesignModal');
+        const designNameInput = document.getElementById('designNameInput');
+        const designerNameInput = document.getElementById('designerNameInput');
+
+        // Clear inputs
+        designNameInput.value = '';
+        designerNameInput.value = '';
+
+        modal.classList.add('open');
+        designNameInput.focus();
+    },
+
+    /**
+     * Hide the save design modal
+     */
+    hideSaveModal() {
+        const modal = document.getElementById('saveDesignModal');
+        modal.classList.remove('open');
+        this.pendingSaveData = null;
+    },
+
+    /**
+     * Confirm save to collection (called from modal)
+     */
+    async confirmSaveToCollection() {
+        if (!this.pendingSaveData) {
+            this.hideSaveModal();
+            return;
+        }
+
+        const designNameInput = document.getElementById('designNameInput');
+        const designerNameInput = document.getElementById('designerNameInput');
+
+        const customDesignName = designNameInput.value.trim();
+        const designerName = designerNameInput.value.trim() || 'Anonymous';
+
+        this.hideSaveModal();
+        this.showLoading(true, 'Saving...');
+
+        try {
+            let title = customDesignName;
+
+            // If no custom name provided, generate one from prompts
+            if (!title && this.pendingSaveData.prompts && this.pendingSaveData.prompts.length > 0) {
+                const titleResult = await FalAPI.generateRingTitle(this.pendingSaveData.prompts);
+                title = titleResult.title || '';
+            }
+
+            const ring = {
+                imageUrl: this.pendingSaveData.imageUrl,
+                prompt: this.pendingSaveData.prompt || '',
+                title: title,
+                type: this.pendingSaveData.type || 'generated',
+                designerName: designerName
+            };
+
+            const result = await FirebaseClient.saveToCollection(ring);
+
+            if (result.success) {
+                await this.loadCollection();
+                this.showSaveSuccess('Ring saved to collection!');
+                this.openCollectionModal();
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Save to collection failed:', error);
+            alert('Could not save ring. Please try again.');
+        } finally {
+            this.showLoading(false);
+            this.pendingSaveData = null;
         }
     }
 };

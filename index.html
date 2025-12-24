@@ -298,6 +298,31 @@
                 <div id="clearAllProgress" class="clear-progress" style="display: none;"></div>
             </div>
         </div>
+
+        <!-- Save Design Modal -->
+        <div class="save-modal" id="saveDesignModal">
+            <div class="save-modal-content">
+                <div class="save-modal-icon">💎</div>
+                <h3>Save to Collection</h3>
+                <p>Add details for your ring design</p>
+
+                <div class="save-input-group">
+                    <label for="designNameInput">Design Name <span class="optional-label">(optional)</span></label>
+                    <input type="text" id="designNameInput" placeholder="e.g., Summer Dreams Ring" maxlength="50" autocomplete="off" spellcheck="false">
+                    <span class="input-hint">Leave blank to auto-generate</span>
+                </div>
+
+                <div class="save-input-group">
+                    <label for="designerNameInput">Your Name</label>
+                    <input type="text" id="designerNameInput" placeholder="e.g., Jane Doe" maxlength="30" autocomplete="off" spellcheck="false">
+                </div>
+
+                <div class="save-modal-actions">
+                    <button class="btn-cancel" onclick="app.hideSaveModal()">Cancel</button>
+                    <button class="btn-save-confirm" id="saveDesignBtn" onclick="app.confirmSaveToCollection()">Save 💎</button>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Screen 5: Preview & Confirmation -->
