@@ -276,6 +276,27 @@
                         <span class="empty-icon">💍</span>
                         <p>No rings saved yet</p>
                     </div>
+
+                    <!-- Trash / Recently Deleted Section -->
+                    <div class="trash-container" id="trashContainer" style="display: none;">
+                        <div class="trash-header" onclick="app.toggleTrashSection()">
+                            <span class="trash-toggle-icon" id="trashToggleIcon">▶</span>
+                            <span class="trash-title">🗑️ Recently Deleted</span>
+                            <span class="trash-count-badge" id="trashCount">0</span>
+                        </div>
+                        <div class="trash-section" id="trashSection">
+                            <div class="trash-actions">
+                                <button class="btn-restore-all" onclick="app.restoreAllFromTrash()">♻️ Restore All</button>
+                                <button class="btn-empty-trash" onclick="app.emptyTrash()">💀 Empty Trash</button>
+                            </div>
+                            <div class="trash-grid" id="trashGrid">
+                                <!-- Trashed rings will be dynamically inserted here -->
+                            </div>
+                            <div class="trash-empty" id="trashEmpty" style="display: none;">
+                                <p>Trash is empty</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -283,17 +304,17 @@
         <!-- Clear All Confirmation Modal -->
         <div class="confirm-modal" id="clearAllModal">
             <div class="confirm-modal-content">
-                <div class="confirm-modal-icon">⚠️</div>
-                <h3>Clear All Rings?</h3>
-                <p>This will permanently delete <strong id="clearAllCount">0</strong> ring(s) from your collection.</p>
-                <p class="confirm-warning">This action cannot be undone.</p>
+                <div class="confirm-modal-icon">🗑️</div>
+                <h3>Move All to Trash?</h3>
+                <p>This will move <strong id="clearAllCount">0</strong> ring(s) to the trash.</p>
+                <p class="confirm-info">You can recover them from "Recently Deleted" later.</p>
                 <div class="confirm-input-group">
                     <label for="clearAllInput">Type <strong>CLEAR</strong> to confirm:</label>
                     <input type="text" id="clearAllInput" oninput="app.validateClearAllInput()" autocomplete="off" spellcheck="false">
                 </div>
                 <div class="confirm-modal-actions">
                     <button class="btn-cancel" onclick="app.hideClearAllConfirm()">Cancel</button>
-                    <button class="btn-danger" id="clearAllConfirmBtn" onclick="app.clearAllRings()" disabled>Clear All</button>
+                    <button class="btn-danger" id="clearAllConfirmBtn" onclick="app.clearAllRings()" disabled>Move to Trash</button>
                 </div>
                 <div id="clearAllProgress" class="clear-progress" style="display: none;"></div>
             </div>

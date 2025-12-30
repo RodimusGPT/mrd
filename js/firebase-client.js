@@ -287,7 +287,7 @@ const FirebaseClient = {
     },
 
     /**
-     * Remove a ring from the collection
+     * Remove a ring from the collection (moves to trash for recovery)
      */
     async removeFromCollection(ringId) {
         if (!this.isConfigured()) {
@@ -295,6 +295,16 @@ const FirebaseClient = {
         }
 
         try {
+            // First, get the ring data so we can move it to trash
+            const collection = await this.getCollection();
+            const ring = collection.data?.find(r => r.id === ringId);
+
+            if (ring) {
+                // Move to trash first
+                await this.moveToTrash(ring);
+            }
+
+            // Then remove from collection
             const response = await fetch(`${this.baseUrl}/ring_collection/${ringId}`, {
                 method: 'DELETE'
             });
@@ -303,7 +313,7 @@ const FirebaseClient = {
                 throw new Error(`Firebase error: ${response.status}`);
             }
 
-            console.log('🗑️ Ring removed from collection:', ringId);
+            console.log('🗑️ Ring moved to trash:', ringId);
             return { success: true };
 
         } catch (error) {
@@ -440,7 +450,7 @@ const FirebaseClient = {
     },
 
     /**
-     * Clear all rings from the collection
+     * Clear all rings from the collection (moves to trash for recovery)
      * @param {function} onProgress - Optional callback for progress updates (deleted, total)
      * @returns {Promise<{success: boolean, deleted: number, error?: string}>}
      */
@@ -464,30 +474,38 @@ const FirebaseClient = {
             let deleted = 0;
             const errors = [];
 
-            // Delete each ring
+            // Move each ring to trash instead of permanent deletion
             for (const ring of rings) {
                 try {
-                    const response = await fetch(`${this.baseUrl}/ring_collection/${ring.id}`, {
-                        method: 'DELETE'
-                    });
+                    // First, move to trash
+                    const trashResult = await this.moveToTrash(ring);
 
-                    if (response.ok || response.status === 404) {
-                        deleted++;
-                        if (onProgress) {
-                            onProgress(deleted, rings.length);
+                    if (trashResult.success) {
+                        // Then remove from collection
+                        const response = await fetch(`${this.baseUrl}/ring_collection/${ring.id}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (response.ok || response.status === 404) {
+                            deleted++;
+                            if (onProgress) {
+                                onProgress(deleted, rings.length);
+                            }
+                        } else {
+                            errors.push(`Failed to delete ${ring.id}: ${response.status}`);
                         }
                     } else {
-                        errors.push(`Failed to delete ${ring.id}: ${response.status}`);
+                        errors.push(`Failed to move ${ring.id} to trash: ${trashResult.error}`);
                     }
                 } catch (err) {
-                    errors.push(`Error deleting ${ring.id}: ${err.message}`);
+                    errors.push(`Error processing ${ring.id}: ${err.message}`);
                 }
             }
 
-            console.log(`🗑️ Cleared ${deleted}/${rings.length} rings from collection`);
+            console.log(`🗑️ Moved ${deleted}/${rings.length} rings to trash`);
 
             if (errors.length > 0) {
-                console.warn('Some deletions failed:', errors);
+                console.warn('Some operations failed:', errors);
             }
 
             return {
@@ -499,6 +517,292 @@ const FirebaseClient = {
 
         } catch (error) {
             console.error('Firebase clear all error:', error);
+            return { success: false, deleted: 0, error: error.message };
+        }
+    },
+
+    // =============================================
+    // TRASH / SOFT DELETE (Recovery Support)
+    // =============================================
+
+    /**
+     * Move a ring to trash (soft delete)
+     * @param {object} ring - The ring object to move to trash
+     * @returns {Promise<{success: boolean, error?: string}>}
+     */
+    async moveToTrash(ring) {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured' };
+        }
+
+        try {
+            const trashId = ring.id || `ring_${Date.now()}`;
+            const docData = {
+                fields: {
+                    id: { stringValue: trashId },
+                    image_url: { stringValue: ring.imageUrl || '' },
+                    prompt: { stringValue: ring.prompt || '' },
+                    title: { stringValue: ring.title || '' },
+                    type: { stringValue: ring.type || 'generated' },
+                    designer_name: { stringValue: ring.designerName || 'Anonymous' },
+                    is_the_one: { booleanValue: ring.isTheOne || false },
+                    original_created_at: { timestampValue: ring.createdAt || new Date().toISOString() },
+                    deleted_at: { timestampValue: new Date().toISOString() }
+                }
+            };
+
+            const response = await fetch(`${this.baseUrl}/ring_trash/${trashId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(docData)
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            console.log('🗑️ Ring moved to trash:', trashId);
+            return { success: true, id: trashId };
+
+        } catch (error) {
+            console.error('Firebase move to trash error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    /**
+     * Get all rings in trash
+     * @returns {Promise<{success: boolean, data: array, error?: string}>}
+     */
+    async getTrash() {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured', data: [] };
+        }
+
+        try {
+            const response = await fetch(`${this.baseUrl}/ring_trash`);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return { success: true, data: [] };
+                }
+                throw new Error(`Firebase error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const rings = (result.documents || []).map(doc => ({
+                id: doc.fields?.id?.stringValue,
+                imageUrl: doc.fields?.image_url?.stringValue,
+                prompt: doc.fields?.prompt?.stringValue,
+                title: doc.fields?.title?.stringValue || '',
+                type: doc.fields?.type?.stringValue,
+                designerName: doc.fields?.designer_name?.stringValue || '',
+                isTheOne: doc.fields?.is_the_one?.booleanValue || false,
+                createdAt: doc.fields?.original_created_at?.timestampValue,
+                deletedAt: doc.fields?.deleted_at?.timestampValue
+            })).sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
+
+            return { success: true, data: rings };
+
+        } catch (error) {
+            console.error('Firebase get trash error:', error);
+            return { success: false, error: error.message, data: [] };
+        }
+    },
+
+    /**
+     * Restore a ring from trash back to collection
+     * @param {string} ringId - The ID of the ring to restore
+     * @returns {Promise<{success: boolean, error?: string}>}
+     */
+    async restoreFromTrash(ringId) {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured' };
+        }
+
+        try {
+            // First, get the ring from trash
+            const trashResponse = await fetch(`${this.baseUrl}/ring_trash/${ringId}`);
+
+            if (!trashResponse.ok) {
+                throw new Error('Ring not found in trash');
+            }
+
+            const trashDoc = await trashResponse.json();
+
+            // Restore to collection
+            const ringData = {
+                fields: {
+                    id: { stringValue: trashDoc.fields?.id?.stringValue || ringId },
+                    image_url: { stringValue: trashDoc.fields?.image_url?.stringValue || '' },
+                    prompt: { stringValue: trashDoc.fields?.prompt?.stringValue || '' },
+                    title: { stringValue: trashDoc.fields?.title?.stringValue || '' },
+                    type: { stringValue: trashDoc.fields?.type?.stringValue || 'generated' },
+                    designer_name: { stringValue: trashDoc.fields?.designer_name?.stringValue || 'Anonymous' },
+                    is_the_one: { booleanValue: trashDoc.fields?.is_the_one?.booleanValue || false },
+                    created_at: { timestampValue: trashDoc.fields?.original_created_at?.timestampValue || new Date().toISOString() }
+                }
+            };
+
+            const restoreResponse = await fetch(`${this.baseUrl}/ring_collection/${ringId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ringData)
+            });
+
+            if (!restoreResponse.ok) {
+                throw new Error(`Failed to restore: ${restoreResponse.status}`);
+            }
+
+            // Remove from trash
+            await fetch(`${this.baseUrl}/ring_trash/${ringId}`, {
+                method: 'DELETE'
+            });
+
+            console.log('♻️ Ring restored from trash:', ringId);
+            return { success: true };
+
+        } catch (error) {
+            console.error('Firebase restore from trash error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    /**
+     * Restore all rings from trash back to collection
+     * @param {function} onProgress - Optional callback for progress updates
+     * @returns {Promise<{success: boolean, restored: number, error?: string}>}
+     */
+    async restoreAllFromTrash(onProgress = null) {
+        if (!this.isConfigured()) {
+            return { success: false, restored: 0, error: 'Firebase not configured' };
+        }
+
+        try {
+            const trash = await this.getTrash();
+            if (!trash.success) {
+                throw new Error(trash.error || 'Failed to fetch trash');
+            }
+
+            const rings = trash.data;
+            if (rings.length === 0) {
+                return { success: true, restored: 0 };
+            }
+
+            let restored = 0;
+            const errors = [];
+
+            for (const ring of rings) {
+                try {
+                    const result = await this.restoreFromTrash(ring.id);
+                    if (result.success) {
+                        restored++;
+                        if (onProgress) {
+                            onProgress(restored, rings.length);
+                        }
+                    } else {
+                        errors.push(`Failed to restore ${ring.id}: ${result.error}`);
+                    }
+                } catch (err) {
+                    errors.push(`Error restoring ${ring.id}: ${err.message}`);
+                }
+            }
+
+            console.log(`♻️ Restored ${restored}/${rings.length} rings from trash`);
+
+            return {
+                success: restored > 0,
+                restored,
+                total: rings.length,
+                errors: errors.length > 0 ? errors : undefined
+            };
+
+        } catch (error) {
+            console.error('Firebase restore all error:', error);
+            return { success: false, restored: 0, error: error.message };
+        }
+    },
+
+    /**
+     * Permanently delete a ring from trash
+     * @param {string} ringId - The ID of the ring to permanently delete
+     * @returns {Promise<{success: boolean, error?: string}>}
+     */
+    async permanentlyDelete(ringId) {
+        if (!this.isConfigured()) {
+            return { success: false, error: 'Firebase not configured' };
+        }
+
+        try {
+            const response = await fetch(`${this.baseUrl}/ring_trash/${ringId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok && response.status !== 404) {
+                throw new Error(`Firebase error: ${response.status}`);
+            }
+
+            console.log('💀 Ring permanently deleted:', ringId);
+            return { success: true };
+
+        } catch (error) {
+            console.error('Firebase permanent delete error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    /**
+     * Empty the trash (permanently delete all)
+     * @param {function} onProgress - Optional callback for progress updates
+     * @returns {Promise<{success: boolean, deleted: number, error?: string}>}
+     */
+    async emptyTrash(onProgress = null) {
+        if (!this.isConfigured()) {
+            return { success: false, deleted: 0, error: 'Firebase not configured' };
+        }
+
+        try {
+            const trash = await this.getTrash();
+            if (!trash.success) {
+                throw new Error(trash.error || 'Failed to fetch trash');
+            }
+
+            const rings = trash.data;
+            if (rings.length === 0) {
+                return { success: true, deleted: 0 };
+            }
+
+            let deleted = 0;
+            const errors = [];
+
+            for (const ring of rings) {
+                try {
+                    const result = await this.permanentlyDelete(ring.id);
+                    if (result.success) {
+                        deleted++;
+                        if (onProgress) {
+                            onProgress(deleted, rings.length);
+                        }
+                    } else {
+                        errors.push(`Failed to delete ${ring.id}: ${result.error}`);
+                    }
+                } catch (err) {
+                    errors.push(`Error deleting ${ring.id}: ${err.message}`);
+                }
+            }
+
+            console.log(`💀 Permanently deleted ${deleted}/${rings.length} rings from trash`);
+
+            return {
+                success: deleted > 0,
+                deleted,
+                total: rings.length,
+                errors: errors.length > 0 ? errors : undefined
+            };
+
+        } catch (error) {
+            console.error('Firebase empty trash error:', error);
             return { success: false, deleted: 0, error: error.message };
         }
     }

@@ -22,6 +22,9 @@ const app = {
     // Saved ring collection
     savedRings: [],  // Array of {id, imageUrl, prompt, type, timestamp, isTheOne}
 
+    // Trash (recently deleted rings)
+    trashedRings: [],  // Array of deleted rings that can be recovered
+
     // Pending save data (used when save modal is open)
     pendingSaveData: null,  // {imageUrl, prompt, type, prompts}
 
@@ -48,6 +51,9 @@ const app = {
 
         // Load saved ring collection from Firebase
         await this.loadCollection();
+
+        // Load trash (recently deleted)
+        await this.loadTrash();
 
         // Check if there's a saved design
         this.checkSavedDesign();
@@ -1709,6 +1715,236 @@ const app = {
             if (progressEl) {
                 progressEl.style.display = 'none';
             }
+        }
+    },
+
+    // ============================================
+    // TRASH / RECENTLY DELETED MANAGEMENT
+    // ============================================
+
+    trashExpanded: false,
+
+    /**
+     * Load trash from Firebase on init
+     */
+    async loadTrash() {
+        try {
+            const result = await FirebaseClient.getTrash();
+            if (result.success) {
+                this.trashedRings = result.data;
+                this.updateTrashDisplay();
+                console.log(`🗑️ Loaded ${this.trashedRings.length} trashed rings`);
+            }
+        } catch (error) {
+            console.warn('Could not load trash:', error);
+        }
+    },
+
+    /**
+     * Toggle trash section visibility
+     */
+    toggleTrashSection() {
+        this.trashExpanded = !this.trashExpanded;
+        const trashSection = document.getElementById('trashSection');
+        const toggleIcon = document.getElementById('trashToggleIcon');
+
+        if (trashSection) {
+            trashSection.classList.toggle('expanded', this.trashExpanded);
+        }
+        if (toggleIcon) {
+            toggleIcon.textContent = this.trashExpanded ? '▼' : '▶';
+        }
+    },
+
+    /**
+     * Update the trash display
+     */
+    updateTrashDisplay() {
+        const trashContainer = document.getElementById('trashContainer');
+        const trashGrid = document.getElementById('trashGrid');
+        const trashEmpty = document.getElementById('trashEmpty');
+        const trashCount = document.getElementById('trashCount');
+
+        if (trashCount) {
+            trashCount.textContent = this.trashedRings.length;
+        }
+
+        // Show/hide trash container based on whether there are items
+        if (trashContainer) {
+            trashContainer.style.display = this.trashedRings.length > 0 ? 'block' : 'none';
+        }
+
+        if (!trashGrid) return;
+
+        if (this.trashedRings.length === 0) {
+            trashGrid.style.display = 'none';
+            if (trashEmpty) trashEmpty.style.display = 'flex';
+            return;
+        }
+
+        trashGrid.style.display = 'grid';
+        if (trashEmpty) trashEmpty.style.display = 'none';
+
+        // Render trash cards
+        trashGrid.innerHTML = this.trashedRings.map(ring => `
+            <div class="trash-card" data-ring-id="${ring.id}">
+                <div class="trash-card-image">
+                    <img src="${ring.imageUrl}" alt="${ring.title || 'Deleted ring'}" loading="lazy">
+                </div>
+                ${ring.title ? `<div class="trash-card-title">${ring.title}</div>` : ''}
+                <div class="trash-card-info">
+                    <span class="trash-date">Deleted ${this.formatRelativeDate(ring.deletedAt)}</span>
+                </div>
+                <div class="trash-card-actions">
+                    <button class="btn-restore" onclick="app.restoreRing('${ring.id}')" title="Restore to collection">
+                        ♻️ Restore
+                    </button>
+                    <button class="btn-permanent-delete" onclick="app.permanentlyDeleteRing('${ring.id}')" title="Delete forever">
+                        💀
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    /**
+     * Format relative date (e.g., "2 hours ago")
+     */
+    formatRelativeDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'just now';
+        if (diffMins < 60) return `${diffMins} min ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        return this.formatDate(dateString);
+    },
+
+    /**
+     * Restore a single ring from trash
+     */
+    async restoreRing(ringId) {
+        this.showLoading(true, 'Restoring...');
+
+        try {
+            const result = await FirebaseClient.restoreFromTrash(ringId);
+
+            if (result.success) {
+                await this.loadCollection();
+                await this.loadTrash();
+                this.showSaveSuccess('Ring restored! 💎');
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Restore failed:', error);
+            alert('Could not restore ring. Please try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    /**
+     * Restore all rings from trash
+     */
+    async restoreAllFromTrash() {
+        const count = this.trashedRings.length;
+        if (count === 0) {
+            this.showSaveSuccess('Trash is empty');
+            return;
+        }
+
+        if (!confirm(`Restore all ${count} ring${count !== 1 ? 's' : ''} from trash?`)) {
+            return;
+        }
+
+        this.showLoading(true, 'Restoring all...');
+
+        try {
+            const result = await FirebaseClient.restoreAllFromTrash((restored, total) => {
+                this.showLoading(true, `Restoring ${restored}/${total}...`);
+            });
+
+            if (result.success || result.restored > 0) {
+                await this.loadCollection();
+                await this.loadTrash();
+                this.showSaveSuccess(`Restored ${result.restored} ring${result.restored !== 1 ? 's' : ''}! 💎`);
+            } else {
+                throw new Error(result.error || 'Failed to restore');
+            }
+        } catch (error) {
+            console.error('Restore all failed:', error);
+            alert('Could not restore rings. Please try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    /**
+     * Permanently delete a single ring from trash
+     */
+    async permanentlyDeleteRing(ringId) {
+        if (!confirm('Permanently delete this ring? This cannot be undone.')) {
+            return;
+        }
+
+        this.showLoading(true, 'Deleting...');
+
+        try {
+            const result = await FirebaseClient.permanentlyDelete(ringId);
+
+            if (result.success) {
+                await this.loadTrash();
+                this.showSaveSuccess('Permanently deleted');
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error) {
+            console.error('Permanent delete failed:', error);
+            alert('Could not delete ring. Please try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    /**
+     * Empty the trash (permanently delete all)
+     */
+    async emptyTrash() {
+        const count = this.trashedRings.length;
+        if (count === 0) {
+            this.showSaveSuccess('Trash is already empty');
+            return;
+        }
+
+        if (!confirm(`Permanently delete all ${count} ring${count !== 1 ? 's' : ''} in trash? This cannot be undone.`)) {
+            return;
+        }
+
+        this.showLoading(true, 'Emptying trash...');
+
+        try {
+            const result = await FirebaseClient.emptyTrash((deleted, total) => {
+                this.showLoading(true, `Deleting ${deleted}/${total}...`);
+            });
+
+            if (result.success || result.deleted > 0) {
+                await this.loadTrash();
+                this.showSaveSuccess(`Permanently deleted ${result.deleted} ring${result.deleted !== 1 ? 's' : ''}`);
+            } else {
+                throw new Error(result.error || 'Failed to empty trash');
+            }
+        } catch (error) {
+            console.error('Empty trash failed:', error);
+            alert('Could not empty trash. Please try again.');
+        } finally {
+            this.showLoading(false);
         }
     },
 
